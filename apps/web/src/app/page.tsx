@@ -1,12 +1,10 @@
 import { AnimatedText } from "@/components/animated-text";
-import { CopyText } from "@/components/copy-text";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@v1/ui/tooltip";
-import Image from "next/image";
 
 export default function Page() {
   return (
@@ -15,29 +13,12 @@ export default function Page() {
       <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent pointer-events-none -z-10" />
 
       <h1 className="font-departure text-[40px] md:text-[84px] relative z-10 text-center h-[120px] md:h-auto leading-tight">
-        <AnimatedText text="Production ready code" />
+        <AnimatedText text="GitHub Code Reviewer" />
       </h1>
 
       <p className="relative z-10 text-center md:text-xl max-w-[80%] mt-2 md:mt-6">
-        An open-source starter kit based on{" "}
-        <a href="https://midday.ai?utm_source=v1-convex" className="underline">
-          Midday
-        </a>
-        . Now on{" "}
-        <a href="https://convex.dev/c/middayv1template" className="underline">
-          Convex
-        </a>
-        .
+        Automate code reviews with AI and get insights on your codebase!
       </p>
-
-      {/* In process */}
-      {/* <span className="relative z-10 text-center text-[#878787] text-xs mt-2">
-        Security verified by Kenshū.
-      </span> */}
-
-      <div className="mt-10 mb-8">
-        <CopyText value="npm create @convex-dev/v1@latest" />
-      </div>
 
       <TooltipProvider delayDuration={0}>
         <Tooltip>
@@ -47,13 +28,13 @@ export default function Page() {
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mt-5">
                 <span className="text-sm">Get started →</span>
               </div>
             </a>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={15} className="text-xs">
-            Log in to the example dashboard
+            Log in to the dashboard
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
