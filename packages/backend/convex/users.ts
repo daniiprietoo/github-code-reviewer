@@ -89,7 +89,7 @@ export const deleteUserAccount = internalMutation({
   },
   handler: async (ctx, args) => {
     await asyncMap(
-      ["google" /* add other providers as needed */],
+      ["github"],
       async (provider) => {
         const authAccount = await ctx.db
           .query("authAccounts")

@@ -88,17 +88,7 @@ export default function BillingSettings() {
           This is a demo app.
         </h2>
         <p className="text-sm font-normal text-primary/60">
-          Convex SaaS is a demo app that uses Polar test environment. You can
-          find a list of test card numbers in this{" "}
-          <a
-            href="https://stripe.com/docs/testing#cards"
-            target="_blank"
-            rel="noreferrer"
-            className="font-medium text-primary/80 underline"
-          >
-            resource from Stripe
-          </a>
-          .
+          GitHub Code Reviewer is a demo app that uses Polar test environment.
         </p>
       </div>
 
@@ -192,7 +182,7 @@ export default function BillingSettings() {
         {!user.subscription && (
           <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 py-3 dark:bg-card">
             <p className="text-sm font-normal text-primary/60">
-              You will not be charged for testing the subscription upgrade.
+              You will not be charged for testing the app.
             </p>
             {monthlyProProduct && yearlyProProduct && (
               <Button type="submit" size="sm" asChild>
