@@ -3,12 +3,12 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "@v1/ui/button";
 
-export function GoogleSignin() {
+export function GitHubSignin() {
   const { signIn } = useAuthActions();
 
   return (
-    <Button onClick={() => signIn("google")} variant="outline" className="font-mono">
-      Sign in with Google
+    <Button onClick={() => signIn("github")} variant="outline" className="font-mono">
+      Sign in with GitHub
     </Button>
   );
 }
