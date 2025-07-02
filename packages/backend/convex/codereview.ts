@@ -10,6 +10,7 @@ import {
   internalQuery,
   query,
 } from "./_generated/server";
+import type { CodeReviewResponse } from "./ai";
 import { PULL_REQUEST_STATUS } from "./utils/constants";
 import {
   createGitHubApp,
@@ -74,32 +75,181 @@ async function processCodeReview(
 ) {
   const octokit = createGitHubApp(installationId);
 
-  const comment = generateReviewComment(pullRequest);
+  try {
+    // Get repository data to find the owner user
+    const repository = await ctx.runQuery(
+      internal.codereview.getRepositoryOwner,
+      {
+        repositoryId: pullRequest.repositoryId,
+      },
+    );
 
-  const commentResponse = await octokit.rest.issues.createComment({
-    owner: pullRequest.repository.owner,
-    repo: pullRequest.repository.name,
-    issue_number: pullRequest.number,
-    body: comment,
-  });
+    if (!repository) {
+      throw new Error("Repository not found");
+    }
 
-  console.log(
-    `Posted comment on PR #${pullRequest.number}: ${commentResponse.data.html_url}`,
-  );
+    // Try to get AI analysis
+    let aiReview: CodeReviewResponse | null = null;
+    try {
+      // Get PR diff content
+      const diffResponse = await octokit.rest.pulls.get({
+        owner: pullRequest.repository.owner,
+        repo: pullRequest.repository.name,
+        pull_number: pullRequest.number,
+        mediaType: {
+          format: "diff",
+        },
+      });
 
-  // Create code review record
-  await ctx.runMutation(internal.codereview.createCodeReview, {
-    pullRequestId: pullRequest._id,
-    summary: `Automated review for PR #${pullRequest.number}: ${pullRequest.title}`,
-    overallScore: 85, // Placeholder score
-    githubCommentId: commentResponse.data.id,
-  });
+      // Get PR files
+      const filesResponse = await octokit.rest.pulls.listFiles({
+        owner: pullRequest.repository.owner,
+        repo: pullRequest.repository.name,
+        pull_number: pullRequest.number,
+      });
+
+      aiReview = await ctx.runAction(internal.ai.generateAICodeReview, {
+        userId: repository.ownerUserId,
+        pullRequestData: {
+          title: pullRequest.title,
+          body: pullRequest.body || undefined,
+          diffContent: diffResponse.data as unknown as string,
+          files: filesResponse.data.map((file) => ({
+            filename: file.filename,
+            patch: file.patch || undefined,
+            additions: file.additions,
+            deletions: file.deletions,
+          })),
+        },
+      });
+
+      console.log("AI review generated successfully");
+    } catch (error) {
+      console.error("AI review failed, falling back to basic comment:", error);
+      // Continue with basic comment if AI fails
+    }
+
+    // Generate comment based on AI review or fallback
+    const comment = aiReview
+      ? generateAIReviewComment(pullRequest, aiReview)
+      : generateFallbackComment(pullRequest);
+
+    const commentResponse = await octokit.rest.issues.createComment({
+      owner: pullRequest.repository.owner,
+      repo: pullRequest.repository.name,
+      issue_number: pullRequest.number,
+      body: comment,
+    });
+
+    console.log(
+      `Posted comment on PR #${pullRequest.number}: ${commentResponse.data.html_url}`,
+    );
+
+    // Create code review record with AI results
+    await ctx.runMutation(internal.codereview.createCodeReview, {
+      pullRequestId: pullRequest._id,
+      summary:
+        aiReview?.summary ||
+        `Automated review for PR #${pullRequest.number}: ${pullRequest.title}`,
+      overallScore: aiReview?.overallScore || 50,
+      githubCommentId: commentResponse.data.id,
+      analysisResults:
+        aiReview?.findings.map((finding) => ({
+          file: finding.file || "",
+          line: finding.line,
+          endLine: finding.line,
+          severity: finding.severity,
+          category:
+            finding.type === "issue"
+              ? "bug"
+              : finding.type === "improvement"
+                ? "style"
+                : "general",
+          ruleId: "ai-review",
+          message: finding.message,
+          suggestion: undefined,
+          confidence: 0.8,
+        })) || [],
+    });
+  } catch (error) {
+    console.error("Error in processCodeReview:", error);
+    throw error;
+  }
 }
 
-function generateReviewComment(pullRequest: PullRequest): string {
+function generateAIReviewComment(
+  pullRequest: PullRequest,
+  aiReview: CodeReviewResponse,
+): string {
+  const findingsByType = aiReview.findings.reduce(
+    (acc, finding) => {
+      if (!acc[finding.type]) acc[finding.type] = [];
+      acc[finding.type]!.push(finding);
+      return acc;
+    },
+    {} as Record<string, typeof aiReview.findings>,
+  );
+
+  let comment = `🤖 **AI Code Review**
+
+**Overall Score: ${aiReview.overallScore}/100**
+
+${aiReview.summary}
+
+`;
+
+  // Add findings by type
+  if (findingsByType.issue?.length) {
+    comment += "## 🚨 Issues Found\n";
+    findingsByType.issue.forEach((finding) => {
+      const location = finding.file
+        ? ` \`${finding.file}${finding.line ? `:${finding.line}` : ""}\``
+        : "";
+      comment += `- **${finding.severity.toUpperCase()}:**${location} ${finding.message}\n`;
+    });
+    comment += "\n";
+  }
+
+  if (findingsByType.improvement?.length) {
+    comment += "## 💡 Suggestions for Improvement\n";
+    findingsByType.improvement.forEach((finding) => {
+      const location = finding.file
+        ? ` \`${finding.file}${finding.line ? `:${finding.line}` : ""}\``
+        : "";
+      comment += `- **SUGGESTION:**${location} ${finding.message}\n`;
+    });
+    comment += "\n";
+  }
+
+  if (findingsByType.praise?.length) {
+    comment += "## ✅ Good Practices Found\n";
+    findingsByType.praise.forEach((finding) => {
+      const location = finding.file
+        ? ` \`${finding.file}${finding.line ? `:${finding.line}` : ""}\``
+        : "";
+      comment += `- **GOOD:**${location} ${finding.message}\n`;
+    });
+    comment += "\n";
+  }
+
+  if (aiReview.suggestions.length) {
+    comment += "## 📋 General Recommendations\n";
+    aiReview.suggestions.forEach((suggestion) => {
+      comment += `- ${suggestion}\n`;
+    });
+    comment += "\n";
+  }
+
+  comment += `---
+*🤖 This review was generated automatically using AI. Results may vary and should be validated by human reviewers.*`;
+
+  return comment;
+}
+
+function generateFallbackComment(pullRequest: PullRequest): string {
   return `🤖 **GitHub Code Reviewer**
 
-Hello! I'm analyzing this pull request and will provide feedback soon.
+Hello! I attempted to analyze this pull request but AI review is not configured or failed.
 
 **PR Summary:**
 - **Title:** ${pullRequest.title}
@@ -107,7 +257,9 @@ Hello! I'm analyzing this pull request and will provide feedback soon.
 - **Branch:** ${pullRequest.headRef} → ${pullRequest.baseRef}
 - **Status:** ${pullRequest.status}
 
-✨ *This is an automated message from your friendly code reviewer bot!*`;
+To enable AI-powered reviews, please configure your AI settings in the dashboard.
+
+✨ *This is an automated message from your GitHub Code Reviewer bot!*`;
 }
 
 export const createCodeReview = internalMutation({
@@ -116,11 +268,26 @@ export const createCodeReview = internalMutation({
     summary: v.string(),
     overallScore: v.number(),
     githubCommentId: v.optional(v.number()),
+    analysisResults: v.optional(
+      v.array(
+        v.object({
+          file: v.string(),
+          line: v.optional(v.number()),
+          endLine: v.optional(v.number()),
+          severity: v.string(),
+          category: v.string(),
+          ruleId: v.string(),
+          message: v.string(),
+          suggestion: v.optional(v.string()),
+          confidence: v.number(),
+        }),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("codeReviews", {
       pullRequestId: args.pullRequestId,
-      analysisResults: [], // Empty for now, will add real analysis later
+      analysisResults: args.analysisResults || [],
       summary: args.summary,
       overallScore: args.overallScore,
       githubReviewId: args.githubCommentId,
@@ -188,6 +355,39 @@ export const getPullRequestDetails = internalQuery({
         fullName: repository.fullName,
         owner: repository.owner,
       },
+    };
+  },
+});
+
+export const getRepositoryOwner = internalQuery({
+  args: {
+    repositoryId: v.id("repositories"),
+  },
+  handler: async (ctx, args) => {
+    const repository = await ctx.db.get(args.repositoryId);
+    if (!repository) {
+      return null;
+    }
+
+    const installation = await ctx.db.get(repository.installationId);
+    if (!installation) {
+      return null;
+    }
+
+    // Find the user who owns this installation
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("githubId"), installation.accountId))
+      .first();
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      ownerUserId: user._id,
+      installation,
+      repository,
     };
   },
 });

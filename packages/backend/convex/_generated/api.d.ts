@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as ai from "../ai.js";
 import type * as auth from "../auth.js";
 import type * as codereview from "../codereview.js";
 import type * as email_index from "../email/index.js";
@@ -41,6 +42,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  ai: typeof ai;
   auth: typeof auth;
   codereview: typeof codereview;
   "email/index": typeof email_index;
