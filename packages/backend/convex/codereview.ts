@@ -16,9 +16,12 @@ import { env } from "./env";
 
 // Create GitHub App authentication
 function createGitHubApp(installationId: number) {
+  // Properly format the private key by replacing escaped newlines
+  const privateKey = env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, "\n");
+
   const auth = createAppAuth({
     appId: env.GITHUB_APP_ID,
-    privateKey: env.GITHUB_APP_PRIVATE_KEY,
+    privateKey,
     clientId: env.GITHUB_APP_CLIENT_ID,
     clientSecret: env.GITHUB_APP_CLIENT_SECRET,
   });
@@ -27,7 +30,7 @@ function createGitHubApp(installationId: number) {
     authStrategy: createAppAuth,
     auth: {
       appId: env.GITHUB_APP_ID,
-      privateKey: env.GITHUB_APP_PRIVATE_KEY,
+      privateKey,
       installationId,
     },
   });
