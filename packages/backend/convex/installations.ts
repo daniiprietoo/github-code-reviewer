@@ -1,7 +1,12 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query, type DatabaseReader, type DatabaseWriter } from "./_generated/server";
+import {
+  mutation,
+  query,
+  type DatabaseReader,
+  type DatabaseWriter,
+} from "./_generated/server";
 import { DEFAULT_REPOSITORY_SETTINGS } from "./utils/constants";
 
 interface RepositoryData {
@@ -143,7 +148,10 @@ export const updateInstallationRepositories = mutation({
 
     // Remove repositories
     if (args.repositoriesRemoved) {
-      await removeRepositoriesFromInstallation(ctx.db, args.repositoriesRemoved);
+      await removeRepositoriesFromInstallation(
+        ctx.db,
+        args.repositoriesRemoved,
+      );
     }
 
     // Update installation timestamp
@@ -215,9 +223,7 @@ async function getRepositoriesByInstallation(
 ) {
   return await db
     .query("repositories")
-    .withIndex("by_installation", (q) =>
-      q.eq("installationId", installationId),
-    )
+    .withIndex("by_installation", (q) => q.eq("installationId", installationId))
     .collect();
 }
 
@@ -227,10 +233,7 @@ async function replaceInstallationRepositories(
   repositories: RepositoryData[],
 ) {
   // Remove existing repositories
-  const existingRepos = await getRepositoriesByInstallation(
-    db,
-    installationId,
-  );
+  const existingRepos = await getRepositoriesByInstallation(db, installationId);
   for (const repo of existingRepos) {
     await db.delete(repo._id);
   }

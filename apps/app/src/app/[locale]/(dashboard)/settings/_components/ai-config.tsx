@@ -122,14 +122,14 @@ export function AIConfig() {
 
   const updateFormData = <K extends keyof AIConfig>(
     field: K,
-    value: AIConfig[K]
+    value: AIConfig[K],
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setTestResult(null);
   };
 
   const handleProviderChange = (
-    provider: "openai" | "anthropic" | "google"
+    provider: "openai" | "anthropic" | "google",
   ) => {
     setFormData((prev) => ({
       ...prev,

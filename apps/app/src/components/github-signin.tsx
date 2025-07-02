@@ -7,7 +7,11 @@ export function GitHubSignin() {
   const { signIn } = useAuthActions();
 
   return (
-    <Button onClick={() => signIn("github")} variant="outline" className="font-mono">
+    <Button
+      onClick={() => signIn("github")}
+      variant="outline"
+      className="font-mono"
+    >
       Sign in with GitHub
     </Button>
   );
