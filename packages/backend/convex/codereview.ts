@@ -42,7 +42,7 @@ export const processPullRequest = internalAction({
 
     // Get the pull request details
     const pullRequest = await ctx.runQuery(
-      internal["code-review"].getPullRequestDetails,
+      internal.codereview.getPullRequestDetails,
       {
         pullRequestId: args.pullRequestId,
       },
@@ -81,7 +81,7 @@ Hello! I'm analyzing this pull request and will provide feedback soon.
       );
 
       // Create a simple code review record
-      await ctx.runMutation(internal["code-review"].createCodeReview, {
+      await ctx.runMutation(internal.codereview.createCodeReview, {
         pullRequestId: args.pullRequestId,
         summary: `Automated review for PR #${pullRequest.number}: ${pullRequest.title}`,
         overallScore: 85, // Placeholder score
@@ -89,7 +89,7 @@ Hello! I'm analyzing this pull request and will provide feedback soon.
       });
 
       // Update PR status
-      await ctx.runMutation(internal["code-review"].updatePullRequestStatus, {
+      await ctx.runMutation(internal.codereview.updatePullRequestStatus, {
         pullRequestId: args.pullRequestId,
         status: "completed",
       });
@@ -99,7 +99,7 @@ Hello! I'm analyzing this pull request and will provide feedback soon.
       console.error("Error processing pull request:", error);
 
       // Update PR status to error
-      await ctx.runMutation(internal["code-review"].updatePullRequestStatus, {
+      await ctx.runMutation(internal.codereview.updatePullRequestStatus, {
         pullRequestId: args.pullRequestId,
         status: "error",
       });
