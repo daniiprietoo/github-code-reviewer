@@ -10,8 +10,8 @@ import { ThemeProvider } from "next-themes";
 import { ConvexClientProvider } from "../convex-client-provider";
 
 export const metadata: Metadata = {
-  title: "Create v1",
-  description: "Production ready Next.js app",
+  title: "Github Code Reviewer",
+  description: "Automated Github Code Reviewer for your repositories",
 };
 
 export const viewport = {
