@@ -113,6 +113,26 @@ export const setUserAIConfig = mutation({
   },
 });
 
+export const deleteUserAIConfig = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    // Find and delete the existing config
+    const existingConfig = await ctx.db
+      .query("aiConfigurations")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    if (existingConfig) {
+      await ctx.db.delete(existingConfig._id);
+    }
+  },
+});
+
 export const testAIConnection = action({
   args: {
     provider: v.union(
