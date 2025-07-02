@@ -3,7 +3,6 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    CONVEX_SITE_URL: z.string().url(),
     LOOPS_FORM_ID: z.optional(z.string().min(1)),
     POLAR_ORGANIZATION_TOKEN: z.string().min(1),
     POLAR_WEBHOOK_SECRET: z.string().min(1),
@@ -19,7 +18,6 @@ export const env = createEnv({
     GITHUB_APP_WEBHOOK_SECRET: z.string().min(1),
   },
   runtimeEnv: {
-    CONVEX_SITE_URL: process.env.CONVEX_SITE_URL,
     LOOPS_FORM_ID: process.env.LOOPS_FORM_ID,
     POLAR_ORGANIZATION_TOKEN: process.env.POLAR_ORGANIZATION_TOKEN,
     POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET,
