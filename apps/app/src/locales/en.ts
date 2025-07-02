@@ -1,15 +1,15 @@
 export default {
   dashboard: {
-    title: "Create your App",
-    description:
-      "Build your app on top of Convex SaaS, explore the documentation and start your journey.",
-    bodyTitle: "Get Started",
+    title: "Connect Repos",
+    description: "Connect your GitHub Repos to get started.",
+    bodyTitle: "Repos Connected",
     bodyDescription:
-      "Explore the Dashboard and get started with your first app.",
+      "You can connect more repos by clicking the button beside.",
     bodyTip: "TIP: Try changing the language!",
     headerTitle: "Dashboard",
     headerDescription: "Manage your apps and view your usage.",
     documentationLink: "Explore Documentation",
+    connectMoreRepos: "Connect more repos",
   },
   settings: {
     title: "Settings",

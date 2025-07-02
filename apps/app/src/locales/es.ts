@@ -12,6 +12,7 @@ export default {
     headerTitle: "Panel de control",
     headerDescription: "Administra tus apps y mira tu uso.",
     documentationLink: "Explorar documentación",
+    connectMoreRepos: "Conectar más repositorios",
   },
   settings: {
     title: "Configuración",
