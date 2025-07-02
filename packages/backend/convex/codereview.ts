@@ -110,7 +110,6 @@ Hello! I'm analyzing this pull request and will provide feedback soon.
 ✨ *This is an automated message from your friendly code reviewer bot!*`;
 }
 
-
 export const createCodeReview = internalMutation({
   args: {
     pullRequestId: v.id("pullRequests"),
@@ -134,7 +133,6 @@ export const createCodeReview = internalMutation({
 export const getCodeReviewsForPullRequest = query({
   args: {
     pullRequestId: v.id("pullRequests"),
-    repositoryId: v.id("repositories"),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -142,11 +140,17 @@ export const getCodeReviewsForPullRequest = query({
       return [];
     }
 
-    // Check if user has access to this repository
+    // Get the pull request to derive the repository ID
+    const pullRequest = await ctx.db.get(args.pullRequestId);
+    if (!pullRequest) {
+      return [];
+    }
+
+    // Check if user has access to this repository using the actual repository ID
     const hasAccess = await hasRepositoryAccess(
       ctx.db,
       userId,
-      args.repositoryId,
+      pullRequest.repositoryId,
     );
     if (!hasAccess) {
       return [];

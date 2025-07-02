@@ -8,16 +8,40 @@ import { env } from "../env";
  * Creates a GitHub App authenticated Octokit instance
  */
 export function createGitHubApp(installationId: number): Octokit {
-  const privateKey = env.GITHUB_APP_PRIVATE_KEY.replace(/\\n/g, "\n");
+  let privateKey = env.GITHUB_APP_PRIVATE_KEY;
 
-  return new Octokit({
-    authStrategy: createAppAuth,
-    auth: {
-      appId: env.GITHUB_APP_ID,
-      privateKey,
-      installationId,
-    },
-  });
+  // Handle escaped newlines and format the private key properly
+  privateKey = privateKey.replace(/\\n/g, "\n");
+
+  // Ensure the private key has proper PEM format
+  if (!privateKey.includes("-----BEGIN")) {
+    throw new Error("GitHub App private key must be in PEM format");
+  }
+
+  // Clean up any extra whitespace and ensure proper line endings
+  privateKey = privateKey.trim();
+
+  try {
+    return new Octokit({
+      authStrategy: createAppAuth,
+      auth: {
+        appId: Number(env.GITHUB_APP_ID),
+        privateKey,
+        installationId,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create GitHub App instance:", error);
+    console.error("App ID:", env.GITHUB_APP_ID);
+    console.error("Installation ID:", installationId);
+    console.error(
+      "Private key starts with:",
+      `${privateKey.substring(0, 50)}...`,
+    );
+    throw new Error(
+      `GitHub App authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
 }
 
 /**
