@@ -38,7 +38,7 @@ export const DEFAULT_REPOSITORY_SETTINGS = {
   minSeverity: "medium",
   excludePatterns: [],
   customRules: [],
-} as const;
+};
 
 export const SEVERITY_LEVELS = {
   LOW: "low",

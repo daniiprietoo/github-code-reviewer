@@ -1,7 +1,7 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query, type DatabaseReader, type QueryCtx, type DatabaseWriter } from "./_generated/server";
+import { mutation, query, type DatabaseReader, type DatabaseWriter } from "./_generated/server";
 import { DEFAULT_REPOSITORY_SETTINGS } from "./utils/constants";
 
 interface RepositoryData {
