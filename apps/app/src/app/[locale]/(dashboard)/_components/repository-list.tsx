@@ -111,7 +111,7 @@ export default function RepositoryList() {
       {/* Repositories Section */}
       <div>
         <h2 className="text-xl font-semibold text-primary mb-4">
-          Tracked Repositories
+          Repositories connected to your account
         </h2>
         <div className="flex flex-col gap-4">
           {repositories.map((repository) => (
