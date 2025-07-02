@@ -15,6 +15,7 @@ import type { UploadFileResponse } from "@xixixao/uploadstuff/react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
 import { useState } from "react";
+import { AIConfig } from "./_components/ai-config";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
@@ -25,7 +26,7 @@ export default function DashboardSettings() {
   const removeUserImage = useMutation(api.users.removeUserImage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const deleteCurrentUserAccount = useAction(
-    api.users.deleteCurrentUserAccount,
+    api.users.deleteCurrentUserAccount
   );
   const { doubleCheck, getButtonProps } = useDoubleCheck();
 
@@ -167,6 +168,13 @@ export default function DashboardSettings() {
           </Button>
         </div>
       </form>
+
+      {/* AI Configuration */}
+      <div className="flex w-full flex-col items-start rounded-lg border border-border bg-card">
+        <div className="w-full p-6">
+          <AIConfig />
+        </div>
+      </div>
 
       {/* Delete Account */}
       <div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">

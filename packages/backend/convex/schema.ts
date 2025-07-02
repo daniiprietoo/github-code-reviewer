@@ -55,7 +55,8 @@ export default defineSchema({
       customRules: v.array(v.string()),
     }),
     createdAt: v.number(),
-  }).index("by_github_id", ["githubId"])
+  })
+    .index("by_github_id", ["githubId"])
     .index("by_installation", ["installationId"]),
 
   pullRequests: defineTable({
@@ -74,25 +75,37 @@ export default defineSchema({
     url: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_github_id", ["githubId"])
+  })
+    .index("by_github_id", ["githubId"])
     .index("by_repository", ["repositoryId"]),
 
   codeReviews: defineTable({
     pullRequestId: v.id("pullRequests"),
-    analysisResults: v.array(v.object({
-      file: v.string(),
-      line: v.optional(v.number()),
-      endLine: v.optional(v.number()),
-      severity: v.string(), // "low" | "medium" | "high"
-      category: v.string(), // "bug" | "security" | "style" | "performance"
-      ruleId: v.string(),
-      message: v.string(),
-      suggestion: v.optional(v.string()),
-      confidence: v.number(), // 0-1
-    })),
+    analysisResults: v.array(
+      v.object({
+        file: v.string(),
+        line: v.optional(v.number()),
+        endLine: v.optional(v.number()),
+        severity: v.string(), // "low" | "medium" | "high"
+        category: v.string(), // "bug" | "security" | "style" | "performance"
+        ruleId: v.string(),
+        message: v.string(),
+        suggestion: v.optional(v.string()),
+        confidence: v.number(), // 0-1
+      }),
+    ),
     summary: v.string(),
     overallScore: v.number(), // 0-100
     githubReviewId: v.optional(v.number()),
     completedAt: v.number(),
   }).index("by_pull_request", ["pullRequestId"]),
+
+  aiConfigurations: defineTable({
+    userId: v.id("users"),
+    provider: v.string(), // "openai" | "anthropic" | "google"
+    apiKey: v.string(), // Should be encrypted in production
+    model: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
 });
