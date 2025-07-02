@@ -26,11 +26,16 @@ export default function RepositoryList() {
   });
 
   useEffect(() => {
-    updateGitHubId();
-  }, []);
+    const handleUpdateGitHubId = async () => {
+      try {
+        await updateGitHubId();
+      } catch (error) {
+        console.error("Failed to update GitHub ID:", error);
+      }
+    };
 
-  console.log("Repositories:", repositories);
-  console.log("Recent PRs:", recentPullRequests);
+    handleUpdateGitHubId();
+  }, [updateGitHubId]);
 
   // Helper function to render status icon
   const getStatusIcon = (status: string) => {
@@ -71,7 +76,6 @@ export default function RepositoryList() {
     );
   }
 
-  
   // Empty repositories state
   if (!repositories || repositories.length === 0) {
     return (
