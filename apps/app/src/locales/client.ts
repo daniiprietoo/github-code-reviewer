@@ -10,6 +10,5 @@ export const {
   useCurrentLocale,
 } = createI18nClient({
   en: () => import("./en"),
-  fr: () => import("./fr"),
   es: () => import("./es"),
 });

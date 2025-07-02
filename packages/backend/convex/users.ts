@@ -16,12 +16,26 @@ export const getUser = query({
     if (!user) {
       return;
     }
+
+    // Get GitHub account info
+    const githubAccount = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) =>
+        q.eq("userId", userId).eq("provider", "github"),
+      )
+      .first();
+
+    const githubId = githubAccount
+      ? Number(githubAccount.providerAccountId)
+      : user.githubId;
+
     const subscription = await polar.getCurrentSubscription(ctx, {
       userId: user._id,
     });
     return {
       ...user,
       name: user.username || user.name,
+      githubId,
       subscription,
       avatarUrl: user.imageId
         ? await ctx.storage.getUrl(user.imageId)
@@ -88,21 +102,18 @@ export const deleteUserAccount = internalMutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    await asyncMap(
-      ["github"],
-      async (provider) => {
-        const authAccount = await ctx.db
-          .query("authAccounts")
-          .withIndex("userIdAndProvider", (q) =>
-            q.eq("userId", args.userId).eq("provider", provider),
-          )
-          .unique();
-        if (!authAccount) {
-          return;
-        }
-        await ctx.db.delete(authAccount._id);
-      },
-    );
+    await asyncMap(["github"], async (provider) => {
+      const authAccount = await ctx.db
+        .query("authAccounts")
+        .withIndex("userIdAndProvider", (q) =>
+          q.eq("userId", args.userId).eq("provider", provider),
+        )
+        .unique();
+      if (!authAccount) {
+        return;
+      }
+      await ctx.db.delete(authAccount._id);
+    });
     await ctx.db.delete(args.userId);
   },
 });

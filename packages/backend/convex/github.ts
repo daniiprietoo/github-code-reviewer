@@ -1,7 +1,7 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const saveInstallation = mutation({
   args: {
@@ -262,7 +262,6 @@ export const updateInstallationRepositories = mutation({
   },
 });
 
-
 export const getInstallation = query({
   args: {
     githubInstallationId: v.number(),
@@ -270,7 +269,9 @@ export const getInstallation = query({
   handler: async (ctx, args) => {
     const existingInstallation = await ctx.db
       .query("installations")
-      .withIndex("by_installation_id", (q) => q.eq("githubInstallationId", args.githubInstallationId))
+      .withIndex("by_installation_id", (q) =>
+        q.eq("githubInstallationId", args.githubInstallationId),
+      )
       .first();
 
     if (!existingInstallation) {
@@ -320,6 +321,71 @@ export const getRepositoriesByInstallation = query({
         q.eq("installationId", args.installationId),
       )
       .collect();
+  },
+});
+
+export const getUserRepositories = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    // Get all repositories from installations where the user has access
+    const repositories = await ctx.db.query("repositories").collect();
+    return repositories;
+  },
+});
+
+export const getCurrentUserGitHubId = query({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+
+    // Get GitHub account from authAccounts table
+    const githubAccount = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) =>
+        q.eq("userId", userId).eq("provider", "github"),
+      )
+      .first();
+
+    if (!githubAccount) {
+      return null;
+    }
+
+    // The GitHub user ID is stored in the providerAccountId field
+    return Number(githubAccount.providerAccountId);
+  },
+});
+
+export const updateUserGitHubId = mutation({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Not authenticated");
+    }
+
+    // Get GitHub account from authAccounts table
+    const githubAccount = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) =>
+        q.eq("userId", userId).eq("provider", "github"),
+      )
+      .first();
+
+    if (!githubAccount) {
+      throw new Error("GitHub account not found");
+    }
+
+    const githubId = Number(githubAccount.providerAccountId);
+
+    // Update the user record with the GitHub ID
+    await ctx.db.patch(userId, { githubId });
+
+    return githubId;
   },
 });
 

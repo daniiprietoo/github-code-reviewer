@@ -1,5 +1,5 @@
 import { Webhooks } from "@octokit/webhooks";
-import { api } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { httpAction } from "./_generated/server";
 import type { ActionCtx } from "./_generated/server";
 
@@ -255,12 +255,18 @@ async function handlePullRequest(ctx: ActionCtx, payload: PullRequestPayload) {
 
     console.log(`Pull request saved with ID: ${prId}`);
 
-    // TODO: Trigger code review analysis
-    // This is where you'll later add the code review logic
-    // await ctx.runMutation(api.codeReview.processPullRequest, {
-    //   pullRequestId: prId,
-    //   installationId: payload.installation?.id,
-    // });
+    // Trigger code review analysis
+    if (payload.installation?.id) {
+      await ctx.runAction(internal.codereview.processPullRequest, {
+        pullRequestId: prId,
+        installationId: payload.installation.id,
+      });
+      console.log(
+        `Code review processing triggered for PR #${payload.pull_request.number}`,
+      );
+    } else {
+      console.warn("No installation ID found in payload, skipping code review");
+    }
   } else if (payload.action === "closed") {
     // Update PR status or handle cleanup
     console.log(`Pull request #${payload.pull_request.number} was closed`);
