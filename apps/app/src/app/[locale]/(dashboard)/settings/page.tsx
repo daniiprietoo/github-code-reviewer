@@ -45,7 +45,7 @@ export default function DashboardSettings() {
   const usernameForm = useForm({
     validatorAdapter: zodValidator(),
     defaultValues: {
-      username: user?.username,
+      username: user?.username || "",
     },
     onSubmit: async ({ value }) => {
       await updateUsername({ username: value.username || "" });
