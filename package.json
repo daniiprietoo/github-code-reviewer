@@ -1,11 +1,7 @@
 {
   "name": "v1",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*",
-    "tooling/*"
-  ],
+  "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "scripts": {
     "build": "turbo build",
     "clean": "git clean -xdf node_modules",
@@ -21,8 +17,7 @@
     "lint": "turbo lint && bun lint:repo",
     "lint:repo": "bunx sherif@latest",
     "lint:repo:fix": "bunx sherif@latest --fix",
-    "typecheck": "turbo typecheck",
-    "postinstall": "./scripts/fix-uploadstuff.sh"
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@auth/core": "0.37.0",
@@ -37,5 +32,8 @@
     "typescript": "^5.5.4"
   },
   "packageManager": "bun@1.1.26",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "react-dropzone": "^14.3.8"
+  }
 }

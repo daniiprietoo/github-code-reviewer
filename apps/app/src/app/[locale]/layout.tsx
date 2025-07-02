@@ -35,7 +35,7 @@ export default async function RootLayout({
         <body
           className={cn(
             `${GeistSans.variable} ${GeistMono.variable}`,
-            "antialiased"
+            "antialiased",
           )}
         >
           <ThemeProvider

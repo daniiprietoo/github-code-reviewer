@@ -10,8 +10,8 @@ import * as validators from "@v1/backend/convex/utils/validators";
 import { Button } from "@v1/ui/button";
 import { Input } from "@v1/ui/input";
 import { UploadInput } from "@v1/ui/upload-input";
+import type { UploadFileResponse } from "@v1/ui/upload-input";
 import { useDoubleCheck } from "@v1/ui/utils";
-import type { UploadFileResponse } from "@xixixao/uploadstuff/react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
 import { AIConfig } from "./_components/ai-config";
@@ -25,7 +25,7 @@ export default function DashboardSettings() {
   const removeUserImage = useMutation(api.users.removeUserImage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const deleteCurrentUserAccount = useAction(
-    api.users.deleteCurrentUserAccount
+    api.users.deleteCurrentUserAccount,
   );
   const { doubleCheck, getButtonProps } = useDoubleCheck();
 

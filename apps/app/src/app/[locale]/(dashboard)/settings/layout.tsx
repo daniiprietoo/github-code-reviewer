@@ -19,12 +19,12 @@ const LayoutContainer = ({ children }: { children: React.ReactNode }) => {
             href="/settings"
             className={cn(
               `${buttonVariants({ variant: "ghost" })} ${isSettingsPath && "bg-primary/5"}`,
-              "justify-start rounded-md"
+              "justify-start rounded-md",
             )}
           >
             <span
               className={cn(
-                `text-sm text-primary/80 ${isSettingsPath && "font-medium text-primary"}`
+                `text-sm text-primary/80 ${isSettingsPath && "font-medium text-primary"}`,
               )}
             >
               {t("general")}
@@ -33,12 +33,12 @@ const LayoutContainer = ({ children }: { children: React.ReactNode }) => {
           <Link
             href="/settings/billing"
             className={cn(
-              `${buttonVariants({ variant: "ghost" })} ${isBillingPath && "bg-primary/5"} justify-start rounded-md`
+              `${buttonVariants({ variant: "ghost" })} ${isBillingPath && "bg-primary/5"} justify-start rounded-md`,
             )}
           >
             <span
               className={cn(
-                `text-sm text-primary/80 ${isBillingPath && "font-medium text-primary"}`
+                `text-sm text-primary/80 ${isBillingPath && "font-medium text-primary"}`,
               )}
             >
               {t("billing")}

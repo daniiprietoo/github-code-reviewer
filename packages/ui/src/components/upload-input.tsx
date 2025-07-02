@@ -1,14 +1,20 @@
 "use client";
 
-import {
-  type UploadFileResponse,
-  useUploadFiles,
-} from "@xixixao/uploadstuff/react";
-import { type InputHTMLAttributes, useRef } from "react";
+import { type InputHTMLAttributes, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
+
+export interface UploadFileResponse {
+  response: { storageId: string };
+}
 
 export function UploadInput({
   generateUploadUrl,
   onUploadComplete,
+  accept,
+  id,
+  className,
+  required,
+  tabIndex,
   ...props
 }: {
   generateUploadUrl: () => Promise<string>;
@@ -17,30 +23,58 @@ export function UploadInput({
   InputHTMLAttributes<HTMLInputElement>,
   "accept" | "id" | "type" | "className" | "required" | "tabIndex"
 >) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload } = useUploadFiles(generateUploadUrl, {
-    onUploadComplete: async (uploaded) => {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (acceptedFiles.length === 0) return;
+
+      try {
+        // Upload each file
+        const uploadPromises = acceptedFiles.map(async (file) => {
+          const uploadUrl = await generateUploadUrl();
+
+          const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`Upload failed: ${response.statusText}`);
+          }
+
+          const result = await response.json();
+          return {
+            response: { storageId: result.storageId },
+          };
+        });
+
+        const uploadedFiles = await Promise.all(uploadPromises);
+        onUploadComplete(uploadedFiles);
+      } catch (error) {
+        console.error("Upload failed:", error);
       }
-      onUploadComplete(uploaded);
     },
+    [generateUploadUrl, onUploadComplete],
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: accept ? { [accept]: [] } : undefined,
+    multiple: false,
   });
+
   return (
-    <input
-      ref={fileInputRef}
-      type="file"
-      onChange={async (event) => {
-        if (!event.target.files) {
-          return;
-        }
-        const files = Array.from(event.target.files);
-        if (files.length === 0) {
-          return;
-        }
-        startUpload(files);
-      }}
-      {...props}
-    />
+    <div {...getRootProps()}>
+      <input
+        {...getInputProps()}
+        id={id}
+        className={className}
+        required={required}
+        tabIndex={tabIndex}
+        {...props}
+      />
+    </div>
   );
 }
