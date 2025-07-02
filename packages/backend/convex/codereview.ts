@@ -129,7 +129,7 @@ export const createCodeReview = internalMutation({
   },
 });
 
-// Public query to get code reviews for a PR (with access control)
+// public query to get code reviews for a PR (with access control)
 export const getCodeReviewsForPullRequest = query({
   args: {
     pullRequestId: v.id("pullRequests"),
