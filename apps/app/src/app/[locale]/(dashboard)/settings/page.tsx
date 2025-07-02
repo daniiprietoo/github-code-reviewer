@@ -14,7 +14,6 @@ import { useDoubleCheck } from "@v1/ui/utils";
 import type { UploadFileResponse } from "@xixixao/uploadstuff/react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
-import { useState } from "react";
 import { AIConfig } from "./_components/ai-config";
 
 export default function DashboardSettings() {
@@ -45,7 +44,7 @@ export default function DashboardSettings() {
   const usernameForm = useForm({
     validatorAdapter: zodValidator(),
     defaultValues: {
-      username: user?.username,
+      username: user?.username || "",
     },
     onSubmit: async ({ value }) => {
       await updateUsername({ username: value.username || "" });

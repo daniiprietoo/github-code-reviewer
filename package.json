@@ -21,9 +21,11 @@
     "lint": "turbo lint && bun lint:repo",
     "lint:repo": "bunx sherif@latest",
     "lint:repo:fix": "bunx sherif@latest --fix",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "postinstall": "./scripts/fix-uploadstuff.sh"
   },
   "devDependencies": {
+    "@auth/core": "0.37.0",
     "@biomejs/biome": "1.8.3",
     "@t3-oss/env-nextjs": "^0.11.1",
     "chalk": "^4.1.2",
@@ -35,8 +37,5 @@
     "typescript": "^5.5.4"
   },
   "packageManager": "bun@1.1.26",
-  "dependencies": {
-    "@auth/core": "0.37.0"
-  },
   "version": "0.0.1"
 }

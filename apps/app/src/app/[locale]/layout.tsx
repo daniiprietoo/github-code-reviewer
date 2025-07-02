@@ -21,16 +21,17 @@ export const viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang={params.locale} suppressHydrationWarning>
+      <html lang={locale} suppressHydrationWarning>
         <body
           className={cn(
             `${GeistSans.variable} ${GeistMono.variable}`,
@@ -45,7 +46,7 @@ export default function RootLayout({
           >
             <TooltipProvider delayDuration={0}>
               <ConvexClientProvider>
-                <I18nProviderClient locale={params.locale}>
+                <I18nProviderClient locale={locale}>
                   {children}
                 </I18nProviderClient>
               </ConvexClientProvider>
