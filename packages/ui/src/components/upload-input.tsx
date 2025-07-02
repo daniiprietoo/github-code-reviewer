@@ -56,7 +56,7 @@ export function UploadInput({
         console.error("Upload failed:", error);
       }
     },
-    [generateUploadUrl, onUploadComplete]
+    [generateUploadUrl, onUploadComplete],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
