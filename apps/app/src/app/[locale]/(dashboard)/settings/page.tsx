@@ -14,7 +14,6 @@ import { useDoubleCheck } from "@v1/ui/utils";
 import type { UploadFileResponse } from "@xixixao/uploadstuff/react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
-import { useState } from "react";
 import { AIConfig } from "./_components/ai-config";
 
 export default function DashboardSettings() {
