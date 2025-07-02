@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
+import { api } from "./_generated/api";
 
 export const saveInstallation = mutation({
   args: {
@@ -289,8 +290,17 @@ export const getUserInstallations = query({
       return [];
     }
 
-    // return all installations for the user
-    const installations = await ctx.db.query("installations").collect();
+    // Get the user's GitHub ID
+    const user = await ctx.db.get(userId);
+    if (!user?.githubId) {
+      return [];
+    }
+
+    // Get installations where the user is the account owner
+    const installations = await ctx.db
+      .query("installations")
+      .filter((q) => q.eq(q.field("accountId"), user.githubId))
+      .collect();
 
     const installationsWithRepos = await Promise.all(
       installations.map(async (installation) => {
@@ -331,8 +341,30 @@ export const getUserRepositories = query({
       return [];
     }
 
+    // Get the user's GitHub ID
+    const user = await ctx.db.get(userId);
+    if (!user?.githubId) {
+      return [];
+    }
+
+    // Get installations where the user is the account owner
+    const installations = await ctx.db
+      .query("installations")
+      .filter((q) => q.eq(q.field("accountId"), user.githubId))
+      .collect();
+
     // Get all repositories from installations where the user has access
-    const repositories = await ctx.db.query("repositories").collect();
+    const repositories = [];
+    for (const installation of installations) {
+      const installationRepos = await ctx.db
+        .query("repositories")
+        .withIndex("by_installation", (q) =>
+          q.eq("installationId", installation._id),
+        )
+        .collect();
+      repositories.push(...installationRepos);
+    }
+
     return repositories;
   },
 });

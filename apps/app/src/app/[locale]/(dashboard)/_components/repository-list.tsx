@@ -2,7 +2,7 @@
 
 import { useScopedI18n } from "@/locales/client";
 import { api } from "@v1/backend/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import {
   Calendar,
   CheckCircle,
@@ -14,16 +14,22 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function RepositoryList() {
   const t = useScopedI18n("dashboard");
-  const repositories = useQuery(api.github.getUserRepositories);
-  const recentPullRequests = useQuery(
-    api.codereview.getRecentPullRequests,
-    { limit: 5 }
-  );
 
-  console.log(repositories);
+  const updateGitHubId = useMutation(api.github.updateUserGitHubId);
+  const repositories = useQuery(api.github.getUserRepositories);
+  const recentPullRequests = useQuery(api.codereview.getRecentPullRequests, {
+    limit: 5,
+  });
+
+  useEffect(() => {
+    updateGitHubId();
+  }, []);
+
+  console.log("Repositories:", repositories);
   console.log("Recent PRs:", recentPullRequests);
 
   // Helper function to render status icon
@@ -65,6 +71,7 @@ export default function RepositoryList() {
     );
   }
 
+  
   // Empty repositories state
   if (!repositories || repositories.length === 0) {
     return (
