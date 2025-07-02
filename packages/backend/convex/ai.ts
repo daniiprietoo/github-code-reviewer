@@ -79,56 +79,92 @@ export const setUserAIConfig = mutation({
     apiKey: v.string(),
     model: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; error?: string }> => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("User not authenticated");
     }
 
-    // Check if config already exists
-    const existingConfig = await ctx.db
-      .query("aiConfigurations")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
+    // Validate and sanitize inputs
+    const apiKey = args.apiKey.trim();
+    if (!apiKey || apiKey.length < 10) {
+      return {
+        success: false,
+        error: "API key must be at least 10 characters long",
+      };
+    }
 
-    if (existingConfig) {
-      // Update existing config
-      await ctx.db.patch(existingConfig._id, {
-        provider: args.provider,
-        apiKey: args.apiKey,
-        model: args.model,
-        updatedAt: Date.now(),
-      });
-    } else {
-      // Create new config
-      await ctx.db.insert("aiConfigurations", {
-        userId,
-        provider: args.provider,
-        apiKey: args.apiKey,
-        model: args.model,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
+    if (apiKey.length > 500) {
+      return { success: false, error: "API key is too long" };
+    }
+
+    // Validate model if provided
+    if (args.model) {
+      const model = args.model.trim();
+      if (model.length > 100) {
+        return { success: false, error: "Model name is too long" };
+      }
+    }
+
+    try {
+      // Check if config already exists
+      const existingConfig = await ctx.db
+        .query("aiConfigurations")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
+
+      if (existingConfig) {
+        // Update existing config
+        await ctx.db.patch(existingConfig._id, {
+          provider: args.provider,
+          apiKey: apiKey,
+          model: args.model?.trim(),
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Create new config
+        await ctx.db.insert("aiConfigurations", {
+          userId,
+          provider: args.provider,
+          apiKey: apiKey,
+          model: args.model?.trim(),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to save AI config:", error);
+      return { success: false, error: "Failed to save configuration" };
     }
   },
 });
 
 export const deleteUserAIConfig = mutation({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ success: boolean; error?: string }> => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("User not authenticated");
     }
 
-    // Find and delete the existing config
-    const existingConfig = await ctx.db
-      .query("aiConfigurations")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
+    try {
+      // Find and delete the existing config
+      const existingConfig = await ctx.db
+        .query("aiConfigurations")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .first();
 
-    if (existingConfig) {
+      if (!existingConfig) {
+        return { success: false, error: "No AI configuration found to delete" };
+      }
+
       await ctx.db.delete(existingConfig._id);
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to delete AI config:", error);
+      return { success: false, error: "Failed to delete configuration" };
     }
   },
 });

@@ -98,14 +98,34 @@ export function AIConfig() {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await deleteConfig();
-      setShowForm(false);
-      setIsEditing(false);
+      const result = await deleteConfig();
+      if (result.success) {
+        setShowForm(false);
+        setIsEditing(false);
+        setTestResult(null);
+      } else {
+        setTestResult({
+          success: false,
+          error: result.error || "Failed to delete configuration",
+        });
+      }
     } catch (error) {
       console.error("Failed to delete AI config:", error);
+      setTestResult({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const updateFormData = <K extends keyof AIConfig>(
+    field: K,
+    value: AIConfig[K]
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setTestResult(null);
   };
 
   const handleProviderChange = (
@@ -121,21 +141,37 @@ export function AIConfig() {
 
   const handleSave = async () => {
     if (!formData.apiKey.trim()) {
+      setTestResult({
+        success: false,
+        error: "API key is required",
+      });
       return;
     }
 
     setIsSaving(true);
     try {
-      await setConfig({
+      const result = await setConfig({
         provider: formData.provider,
         apiKey: formData.apiKey.trim(),
         model: formData.model || AI_PROVIDERS[formData.provider].defaultModel,
       });
-      setShowForm(false);
-      setIsEditing(false);
-      setTestResult(null);
+
+      if (result.success) {
+        setShowForm(false);
+        setIsEditing(false);
+        setTestResult(null);
+      } else {
+        setTestResult({
+          success: false,
+          error: result.error || "Failed to save configuration",
+        });
+      }
     } catch (error) {
       console.error("Failed to save AI config:", error);
+      setTestResult({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -165,8 +201,9 @@ export function AIConfig() {
   };
 
   const maskApiKey = (key: string) => {
-    if (key.length <= 8) return "*".repeat(key.length);
-    return `${key.slice(0, 4)}${"*".repeat(key.length - 8)}${key.slice(-4)}`;
+    // Use fixed-length masking to avoid revealing key length
+    if (key.length <= 8) return "****-****";
+    return `${key.slice(0, 3)}${"*".repeat(12)}${key.slice(-3)}`;
   };
 
   return (
@@ -296,9 +333,7 @@ export function AIConfig() {
                 type="password"
                 placeholder="Enter your API key"
                 value={formData.apiKey}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, apiKey: e.target.value }))
-                }
+                onChange={(e) => updateFormData("apiKey", e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
                 {formData.provider === "openai" &&
@@ -317,9 +352,7 @@ export function AIConfig() {
                 value={
                   formData.model || AI_PROVIDERS[formData.provider].defaultModel
                 }
-                onValueChange={(model) =>
-                  setFormData((prev) => ({ ...prev, model }))
-                }
+                onValueChange={(model) => updateFormData("model", model)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select model" />
