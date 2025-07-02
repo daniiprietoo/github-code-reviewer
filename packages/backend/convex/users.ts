@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { action, internalMutation, mutation, query } from "./_generated/server";
 import { polar } from "./subscriptions";
+import { getUserGitHubId } from "./utils/github";
 import { username } from "./utils/validators";
 
 export const getUser = query({
@@ -17,17 +18,8 @@ export const getUser = query({
       return;
     }
 
-    // Get GitHub account info
-    const githubAccount = await ctx.db
-      .query("authAccounts")
-      .withIndex("userIdAndProvider", (q) =>
-        q.eq("userId", userId).eq("provider", "github"),
-      )
-      .first();
-
-    const githubId = githubAccount
-      ? Number(githubAccount.providerAccountId)
-      : user.githubId;
+    // Get GitHub ID from auth accounts or user record
+    const githubId = (await getUserGitHubId(ctx.db, userId)) || user.githubId;
 
     const subscription = await polar.getCurrentSubscription(ctx, {
       userId: user._id,
@@ -51,13 +43,14 @@ export const updateUsername = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return;
+      throw new Error("Not authenticated");
     }
-    const validatedUsername = username.safeParse(args.username);
 
+    const validatedUsername = username.safeParse(args.username);
     if (!validatedUsername.success) {
       throw new Error(validatedUsername.error.message);
     }
+
     await ctx.db.patch(userId, { username: validatedUsername.data });
   },
 });
@@ -80,9 +73,10 @@ export const updateUserImage = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return;
+      throw new Error("Not authenticated");
     }
-    ctx.db.patch(userId, { imageId: args.imageId });
+
+    await ctx.db.patch(userId, { imageId: args.imageId });
   },
 });
 
@@ -91,9 +85,13 @@ export const removeUserImage = mutation({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return;
+      throw new Error("Not authenticated");
     }
-    ctx.db.patch(userId, { imageId: undefined, image: undefined });
+
+    await ctx.db.patch(userId, {
+      imageId: undefined,
+      image: undefined,
+    });
   },
 });
 
@@ -123,20 +121,20 @@ export const deleteCurrentUserAccount = action({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
-      return;
+      throw new Error("Not authenticated");
     }
-    const subscription = await polar.getCurrentSubscription(ctx, {
-      userId,
-    });
-    if (!subscription) {
-      console.error("No subscription found");
-    } else {
+
+    // Cancel subscription if exists
+    const subscription = await polar.getCurrentSubscription(ctx, { userId });
+    if (subscription) {
       await polar.cancelSubscription(ctx, {
         revokeImmediately: true,
       });
+    } else {
+      console.log("No subscription found for user");
     }
-    await ctx.runMutation(internal.users.deleteUserAccount, {
-      userId,
-    });
+
+    // Delete user account
+    await ctx.runMutation(internal.users.deleteUserAccount, { userId });
   },
 });

@@ -20,8 +20,8 @@ export default function RepositoryList() {
   const t = useScopedI18n("dashboard");
 
   const updateGitHubId = useMutation(api.github.updateUserGitHubId);
-  const repositories = useQuery(api.github.getUserRepositories);
-  const recentPullRequests = useQuery(api.codereview.getRecentPullRequests, {
+  const repositories = useQuery(api.repositories.getUserRepositories);
+  const recentPullRequests = useQuery(api.pullrequests.getRecentPullRequests, {
     limit: 5,
   });
 
