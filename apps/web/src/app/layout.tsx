@@ -1,8 +1,8 @@
-import "@v1/ui/globals.css";
+import "@github-code-reviewer/ui/globals.css";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { Provider as AnalyticsProvider } from "@v1/analytics/client";
-import { cn } from "@v1/ui/utils";
+import { Provider as AnalyticsProvider } from "@github-code-reviewer/analytics/client";
+import { cn } from "@github-code-reviewer/ui/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
@@ -31,7 +31,7 @@ export default function RootLayout({
       <body
         className={cn(
           `${DepartureMono.variable} ${GeistSans.variable} ${GeistMono.variable}`,
-          "antialiased dark",
+          "antialiased dark"
         )}
       >
         <ConvexClientProvider>

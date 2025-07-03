@@ -1,5 +1,5 @@
 {
-  "name": "v1",
+  "name": "github-code-reviewer",
   "private": true,
   "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "scripts": {
@@ -7,11 +7,11 @@
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
     "dev": "turbo dev --parallel",
-    "dev:web": "turbo dev --filter=@v1/web",
-    "dev:jobs": "turbo jobs --filter=@v1/jobs",
-    "dev:app": "turbo dev --filter=@v1/app",
-    "start:web": "turbo start --filter=@v1/web",
-    "start:app": "turbo start --filter=@v1/app",
+    "dev:web": "turbo dev --filter=@github-code-reviewer/web",
+    "dev:jobs": "turbo jobs --filter=@github-code-reviewer/jobs",
+    "dev:app": "turbo dev --filter=@github-code-reviewer/app",
+    "start:web": "turbo start --filter=@github-code-reviewer/web",
+    "start:app": "turbo start --filter=@github-code-reviewer/app",
     "test": "turbo test --parallel",
     "format": "biome format --write .",
     "lint": "turbo lint && bun lint:repo",

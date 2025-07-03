@@ -3,8 +3,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@v1/ui/select";
-import { cn } from "@v1/ui/utils";
+} from "@github-code-reviewer/ui/select";
+import { cn } from "@github-code-reviewer/ui/utils";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -18,7 +18,7 @@ export function ThemeSwitcher({ triggerClass }: { triggerClass?: string }) {
       <SelectTrigger
         className={cn(
           "h-6 rounded border-primary/20 bg-secondary !px-2 hover:border-primary/40",
-          triggerClass,
+          triggerClass
         )}
       >
         <div className="flex items-start gap-2">

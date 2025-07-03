@@ -89,7 +89,7 @@ export function UploadInput({
         }
       }
     },
-    [generateUploadUrl, onUploadComplete, onUploadError]
+    [generateUploadUrl, onUploadComplete, onUploadError],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

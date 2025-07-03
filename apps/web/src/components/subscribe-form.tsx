@@ -1,9 +1,9 @@
 "use client";
 
-import { api } from "@v1/backend/convex/_generated/api";
-import { Button } from "@v1/ui/button";
-import { Icons } from "@v1/ui/icons";
-import { Input } from "@v1/ui/input";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Icons } from "@github-code-reviewer/ui/icons";
+import { Input } from "@github-code-reviewer/ui/input";
 import { useAction } from "convex/react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";

@@ -2,16 +2,16 @@
 
 import { useScopedI18n } from "@/locales/client";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import type { Id } from "@github-code-reviewer/backend/convex/_generated/dataModel";
+import * as validators from "@github-code-reviewer/backend/convex/utils/validators";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Input } from "@github-code-reviewer/ui/input";
+import { UploadInput } from "@github-code-reviewer/ui/upload-input";
+import type { UploadFileResponse } from "@github-code-reviewer/ui/upload-input";
+import { useDoubleCheck } from "@github-code-reviewer/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { api } from "@v1/backend/convex/_generated/api";
-import type { Id } from "@v1/backend/convex/_generated/dataModel";
-import * as validators from "@v1/backend/convex/utils/validators";
-import { Button } from "@v1/ui/button";
-import { Input } from "@v1/ui/input";
-import { UploadInput } from "@v1/ui/upload-input";
-import type { UploadFileResponse } from "@v1/ui/upload-input";
-import { useDoubleCheck } from "@v1/ui/utils";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
 import { AIConfig } from "./_components/ai-config";
@@ -25,7 +25,7 @@ export default function DashboardSettings() {
   const removeUserImage = useMutation(api.users.removeUserImage);
   const generateUploadUrl = useMutation(api.users.generateUploadUrl);
   const deleteCurrentUserAccount = useAction(
-    api.users.deleteCurrentUserAccount,
+    api.users.deleteCurrentUserAccount
   );
   const { doubleCheck, getButtonProps } = useDoubleCheck();
 

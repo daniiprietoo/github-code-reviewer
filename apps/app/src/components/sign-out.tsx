@@ -1,8 +1,8 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Button } from "@v1/ui/button";
-import { Icons } from "@v1/ui/icons";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Icons } from "@github-code-reviewer/ui/icons";
 
 export function SignOut() {
   const { signOut } = useAuthActions();

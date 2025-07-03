@@ -1,8 +1,8 @@
-import "@v1/ui/globals.css";
+import "@github-code-reviewer/ui/globals.css";
 import { I18nProviderClient } from "@/locales/client";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
-import { TooltipProvider } from "@v1/ui/tooltip";
-import { cn } from "@v1/ui/utils";
+import { TooltipProvider } from "@github-code-reviewer/ui/tooltip";
+import { cn } from "@github-code-reviewer/ui/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
@@ -35,7 +35,7 @@ export default async function RootLayout({
         <body
           className={cn(
             `${GeistSans.variable} ${GeistMono.variable}`,
-            "antialiased",
+            "antialiased"
           )}
         >
           <ThemeProvider

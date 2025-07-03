@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@v1/ui/tooltip";
+} from "@github-code-reviewer/ui/tooltip";
 
 export default function Page() {
   return (

@@ -1,15 +1,15 @@
 "use client";
 
-import { api } from "@v1/backend/convex/_generated/api";
-import { Button } from "@v1/ui/button";
-import { Input } from "@v1/ui/input";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Input } from "@github-code-reviewer/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@v1/ui/select";
+} from "@github-code-reviewer/ui/select";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Edit, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -122,14 +122,14 @@ export function AIConfig() {
 
   const updateFormData = <K extends keyof AIConfig>(
     field: K,
-    value: AIConfig[K],
+    value: AIConfig[K]
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setTestResult(null);
   };
 
   const handleProviderChange = (
-    provider: "openai" | "anthropic" | "google",
+    provider: "openai" | "anthropic" | "google"
   ) => {
     setFormData((prev) => ({
       ...prev,

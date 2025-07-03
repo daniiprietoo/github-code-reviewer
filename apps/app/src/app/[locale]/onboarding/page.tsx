@@ -1,11 +1,11 @@
 "use client";
 
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import * as validators from "@github-code-reviewer/backend/convex/utils/validators";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Input } from "@github-code-reviewer/ui/input";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
-import { api } from "@v1/backend/convex/_generated/api";
-import * as validators from "@v1/backend/convex/utils/validators";
-import { Button } from "@v1/ui/button";
-import { Input } from "@v1/ui/input";
 import { useMutation, useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

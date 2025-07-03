@@ -6,7 +6,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from "@v1/ui/select";
+} from "@github-code-reviewer/ui/select";
 import { Languages } from "lucide-react";
 
 export function LanguageSwitcher() {

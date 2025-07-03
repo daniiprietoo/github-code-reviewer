@@ -2,8 +2,8 @@
 
 import { useAuthActions } from "@convex-dev/auth/react";
 import { CheckoutLink } from "@convex-dev/polar/react";
-import { api } from "@v1/backend/convex/_generated/api";
-import { Button, buttonVariants } from "@v1/ui/button";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { Button, buttonVariants } from "@github-code-reviewer/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@v1/ui/dropdown-menu";
-import { Logo } from "@v1/ui/logo";
-import { cn } from "@v1/ui/utils";
+} from "@github-code-reviewer/ui/dropdown-menu";
+import { Logo } from "@github-code-reviewer/ui/logo";
+import { cn } from "@github-code-reviewer/ui/utils";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
 import {
   Check,
@@ -47,10 +47,10 @@ export function Navigation({
   const products = usePreloadedQuery(preloadedProducts);
 
   const monthlyProProduct = products?.find(
-    (product) => product.recurringInterval === "month",
+    (product) => product.recurringInterval === "month"
   );
   const yearlyProProduct = products?.find(
-    (product) => product.recurringInterval === "year",
+    (product) => product.recurringInterval === "year"
   );
 
   if (!user) {
@@ -142,7 +142,7 @@ export function Navigation({
           <a
             href="https://github.com/daniiprietoo/github-code-reviewer"
             className={cn(
-              `${buttonVariants({ variant: "outline", size: "sm" })} group hidden h-8 gap-2 rounded-full bg-transparent px-2 pr-2.5 md:flex`,
+              `${buttonVariants({ variant: "outline", size: "sm" })} group hidden h-8 gap-2 rounded-full bg-transparent px-2 pr-2.5 md:flex`
             )}
           >
             <svg
@@ -194,7 +194,7 @@ export function Navigation({
 
               <DropdownMenuItem
                 className={cn(
-                  "group flex h-9 justify-between rounded-md px-2 hover:bg-transparent",
+                  "group flex h-9 justify-between rounded-md px-2 hover:bg-transparent"
                 )}
               >
                 <span className="w-full text-sm text-primary/60 group-hover:text-primary group-focus:text-primary">
@@ -205,7 +205,7 @@ export function Navigation({
 
               <DropdownMenuItem
                 className={cn(
-                  "group flex h-9 justify-between rounded-md px-2 hover:bg-transparent",
+                  "group flex h-9 justify-between rounded-md px-2 hover:bg-transparent"
                 )}
               >
                 <span className="w-full text-sm text-primary/60 group-hover:text-primary group-focus:text-primary">
@@ -234,13 +234,13 @@ export function Navigation({
         <div
           className={cn(
             "flex h-12 items-center border-b-2",
-            isDashboardPath ? "border-primary" : "border-transparent",
+            isDashboardPath ? "border-primary" : "border-transparent"
           )}
         >
           <Link
             href="/"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`,
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
             )}
           >
             Dashboard
@@ -249,13 +249,13 @@ export function Navigation({
         <div
           className={cn(
             "flex h-12 items-center border-b-2",
-            isSettingsPath ? "border-primary" : "border-transparent",
+            isSettingsPath ? "border-primary" : "border-transparent"
           )}
         >
           <Link
             href="/settings"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`,
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
             )}
           >
             Settings
@@ -264,13 +264,13 @@ export function Navigation({
         <div
           className={cn(
             "flex h-12 items-center border-b-2",
-            isBillingPath ? "border-primary" : "border-transparent",
+            isBillingPath ? "border-primary" : "border-transparent"
           )}
         >
           <Link
             href="/settings/billing"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`,
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
             )}
           >
             Billing

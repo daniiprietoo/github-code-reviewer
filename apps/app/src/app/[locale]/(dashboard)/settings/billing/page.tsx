@@ -1,9 +1,9 @@
 "use client";
 
 import { CheckoutLink, CustomerPortalLink } from "@convex-dev/polar/react";
-import { api } from "@v1/backend/convex/_generated/api";
-import { Button } from "@v1/ui/button";
-import { Switch } from "@v1/ui/switch";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { Button } from "@github-code-reviewer/ui/button";
+import { Switch } from "@github-code-reviewer/ui/switch";
 import { useQuery } from "convex/react";
 import { useState } from "react";
 
@@ -75,10 +75,10 @@ export default function BillingSettings() {
   }
 
   const monthlyProProduct = products?.find(
-    (product) => product.recurringInterval === "month",
+    (product) => product.recurringInterval === "month"
   );
   const yearlyProProduct = products?.find(
-    (product) => product.recurringInterval === "year",
+    (product) => product.recurringInterval === "year"
   );
 
   return (
@@ -122,7 +122,7 @@ export default function BillingSettings() {
                 interval={selectedPlanInterval}
                 onChangeInterval={() => {
                   setSelectedPlanInterval((state) =>
-                    state === "month" ? "year" : "month",
+                    state === "month" ? "year" : "month"
                   );
                 }}
               />
@@ -136,7 +136,7 @@ export default function BillingSettings() {
                 interval={selectedPlanInterval}
                 onChangeInterval={() => {
                   setSelectedPlanInterval((state) =>
-                    state === "month" ? "year" : "month",
+                    state === "month" ? "year" : "month"
                   );
                 }}
               />
@@ -166,7 +166,7 @@ export default function BillingSettings() {
                       )}
                       on:{" "}
                       {new Date(
-                        user.subscription.currentPeriodEnd ?? 0 * 1000,
+                        user.subscription.currentPeriodEnd ?? 0 * 1000
                       ).toLocaleDateString("en-US")}
                       .
                     </p>

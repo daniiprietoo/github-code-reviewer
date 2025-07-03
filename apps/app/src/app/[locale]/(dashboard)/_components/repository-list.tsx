@@ -1,7 +1,7 @@
 "use client";
 
 import { useScopedI18n } from "@/locales/client";
-import { api } from "@v1/backend/convex/_generated/api";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import {
   Calendar,

@@ -5,8 +5,8 @@ export const metadata = {
   title: "Home",
 };
 
-import { buttonVariants } from "@v1/ui/button";
-import { cn } from "@v1/ui/utils";
+import { buttonVariants } from "@github-code-reviewer/ui/button";
+import { cn } from "@github-code-reviewer/ui/utils";
 import { Github, Plus } from "lucide-react";
 import Link from "next/link";
 import RepositoryList from "./_components/repository-list";
@@ -35,7 +35,7 @@ export default async function Page() {
                   rel="noopener noreferrer"
                   className={cn(
                     buttonVariants({ variant: "outline" }),
-                    "flex items-center gap-2",
+                    "flex items-center gap-2"
                   )}
                 >
                   <Plus className="h-4 w-4" />

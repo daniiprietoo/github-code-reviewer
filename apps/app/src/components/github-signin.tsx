@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Button } from "@v1/ui/button";
+import { Button } from "@github-code-reviewer/ui/button";
 
 export function GitHubSignin() {
   const { signIn } = useAuthActions();
