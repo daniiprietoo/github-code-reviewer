@@ -58,7 +58,7 @@ export function Navigation({
   }
 
   return (
-    <nav className="sticky top-0 z-50 flex w-full flex-col border-b border-border bg-card px-6">
+    <nav className="sticky top-0 z-50 flex w-full flex-col bg-card px-6 pb-3">
       <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between py-3">
         <div className="flex h-10 items-center gap-2">
           <Link href="/" className="flex h-10 items-center gap-1">
@@ -230,17 +230,17 @@ export function Navigation({
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3">
+      <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3 justify-center">
         <div
           className={cn(
-            "flex h-12 items-center border-b-2",
-            isDashboardPath ? "border-primary" : "border-transparent"
+            "flex items-center",
+            isDashboardPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
           )}
         >
           <Link
             href="/"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
             )}
           >
             Dashboard
@@ -248,14 +248,14 @@ export function Navigation({
         </div>
         <div
           className={cn(
-            "flex h-12 items-center border-b-2",
-            isSettingsPath ? "border-primary" : "border-transparent"
+            "flex items-center",
+            isSettingsPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
           )}
         >
           <Link
             href="/settings"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
             )}
           >
             Settings
@@ -263,14 +263,14 @@ export function Navigation({
         </div>
         <div
           className={cn(
-            "flex h-12 items-center border-b-2",
-            isBillingPath ? "border-primary" : "border-transparent"
+            "flex items-center",
+            isBillingPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
           )}
         >
           <Link
             href="/settings/billing"
             className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80`
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
             )}
           >
             Billing
