@@ -1,9 +1,6 @@
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
-import {
-  action,
-  internalAction,
-} from "../_generated/server";
+import { action, internalAction } from "../_generated/server";
 import type { AIConfig } from "./aiconfig";
 
 export interface CodeReviewRequest {
@@ -184,6 +181,24 @@ Be constructive and specific in your feedback.
     prompt: string,
     options: { maxTokens?: number; temperature?: number },
   ): Promise<string> {
+    const model = this.config.model || "deepseek/deepseek-chat-v3-0324:free";
+    const body = {
+      model,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert code reviewer. Please analyze the following pull request.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      max_tokens: options.maxTokens ?? 2000,
+      temperature: options.temperature ?? 0.3,
+    };
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -192,6 +207,7 @@ Be constructive and specific in your feedback.
           Authorization: `Bearer ${this.config.apiKey}`,
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(body),
       },
     );
 
@@ -251,5 +267,3 @@ export const generateAICodeReview = internalAction({
     });
   },
 });
-
-
