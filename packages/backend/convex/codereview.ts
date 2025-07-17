@@ -10,7 +10,7 @@ import {
   internalQuery,
   query,
 } from "./_generated/server";
-import type { CodeReviewResponse } from "./ai";
+import type { CodeReviewResponse } from "./openrouter/ai";
 import { PULL_REQUEST_STATUS } from "./utils/constants";
 import {
   createGitHubApp,
@@ -108,7 +108,7 @@ async function processCodeReview(
         pull_number: pullRequest.number,
       });
 
-      aiReview = await ctx.runAction(internal.ai.generateAICodeReview, {
+      aiReview = await ctx.runAction(internal.openrouter.ai.generateAICodeReview, {
         userId: repository.ownerUserId,
         pullRequestData: {
           title: pullRequest.title,
