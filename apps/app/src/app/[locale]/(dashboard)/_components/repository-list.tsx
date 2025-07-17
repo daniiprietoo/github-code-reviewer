@@ -82,8 +82,8 @@ export default function RepositoryList() {
       <div className="w-full p-6">
         <div className="rounded-xl border border-primary/20 bg-card p-8">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 bg-secondary">
-              <Github className="h-8 w-8 stroke-[1.5px] text-primary/60" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 text-primary/80 bg-primary/5 font-medium text-sm">
+              <Github className="h-8 w-8" />
             </div>
             <div className="flex flex-col gap-2">
               <h3 className="text-lg font-semibold text-primary">
@@ -117,16 +117,15 @@ export default function RepositoryList() {
           {repositories.map((repository) => (
             <div
               key={repository._id}
-              className="group relative flex items-center justify-between rounded-xl border border-primary/20 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm"
+              className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-primary/20 bg-card p-4 sm:gap-0 gap-4"
             >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/10 bg-secondary">
-                  <Github className="h-6 w-6 stroke-[1.5px] text-primary/60" />
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/10 bg-secondary flex-shrink-0">
+                  <Github className="h-6 w-6 stroke-[2px] text-primary/60" />
                 </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-semibold text-primary">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-base font-semibold text-primary truncate">
                       {repository.name}
                     </h3>
                     {repository.language && (
@@ -138,9 +137,10 @@ export default function RepositoryList() {
                       </div>
                     )}
                   </div>
-
-                  <div className="flex items-center gap-4 text-sm text-primary/60">
-                    <span className="font-mono">{repository.fullName}</span>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-primary/60">
+                    <span className="font-mono truncate">
+                      {repository.fullName}
+                    </span>
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       <span>
@@ -150,12 +150,11 @@ export default function RepositoryList() {
                   </div>
                 </div>
               </div>
-
               <Link
                 href={`https://github.com/${repository.fullName}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-medium text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-medium text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary w-full sm:w-auto justify-center sm:justify-start"
               >
                 View on GitHub
                 <Github className="h-4 w-4" />
@@ -175,16 +174,15 @@ export default function RepositoryList() {
             {recentPullRequests.map((pr) => (
               <div
                 key={pr._id}
-                className="group relative flex items-center justify-between rounded-xl border border-primary/20 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-sm"
+                className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-primary/20 bg-card p-4 sm:gap-0 gap-4"
               >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/10 bg-secondary">
-                    <GitPullRequest className="h-6 w-6 stroke-[1.5px] text-primary/60" />
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/10 bg-secondary flex-shrink-0">
+                    <GitPullRequest className="h-6 w-6 stroke-[2px] text-primary/60" />
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold text-primary">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-semibold text-primary truncate">
                         #{pr.number} {pr.title}
                       </h3>
                       <div className="flex items-center gap-1">
@@ -194,9 +192,8 @@ export default function RepositoryList() {
                         </span>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-4 text-sm text-primary/60">
-                      <span className="font-mono">
+                    <div className="flex flex-wrap items-center gap-2 text-sm text-primary/60">
+                      <span className="font-mono truncate">
                         {pr.repository?.fullName}
                       </span>
                       <span>by @{pr.author}</span>
@@ -221,12 +218,11 @@ export default function RepositoryList() {
                     </div>
                   </div>
                 </div>
-
                 <Link
                   href={pr.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-medium text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                  className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm font-medium text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary w-full sm:w-auto justify-center sm:justify-start"
                 >
                   View PR
                   <GitPullRequest className="h-4 w-4" />
