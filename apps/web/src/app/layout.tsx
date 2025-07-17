@@ -16,9 +16,12 @@ const DepartureMono = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://v1-convex.vercel.app"),
-  title: "Create v1",
+  title: "GitHub Code Reviewer",
   description:
-    "A free, open-source starter kit for your next project, built with insights from Midday.",
+    "GitHub Code Reviewer is a tool that helps you review code changes in a GitHub pull request.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

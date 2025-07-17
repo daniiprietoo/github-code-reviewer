@@ -2,7 +2,7 @@ import { Header } from "@/app/[locale]/(dashboard)/_components/header";
 import { getScopedI18n } from "@/locales/server";
 
 export const metadata = {
-  title: "Home",
+  title: "Dashboard",
 };
 
 import { buttonVariants } from "@github-code-reviewer/ui/button";
