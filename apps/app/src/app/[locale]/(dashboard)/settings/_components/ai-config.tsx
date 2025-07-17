@@ -143,10 +143,7 @@ export function AIConfig() {
   };
 
   const handleSave = async () => {
-    if (
-      formData.provider === "openrouter" &&
-      !formData.apiKey?.trim()
-    ) {
+    if (formData.provider === "openrouter" && !formData.apiKey?.trim()) {
       setTestResult({
         success: false,
         error:
@@ -288,22 +285,22 @@ export function AIConfig() {
                   API Key
                 </label>
                 {config.provider === "openrouter" ? (
-                <div className="flex items-center gap-1">
-                  <p className="text-xs font-mono truncate">
-                    {showApiKey
-                      ? config.apiKey || ""
-                      : maskApiKey(config.apiKey || "")}
-                  </p>
-                  <Button
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 flex-shrink-0"
-                  >
-                    {showApiKey ? (
-                      <EyeOff className="w-3 h-3" />
-                    ) : (
-                      <Eye className="w-3 h-3" />
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs font-mono truncate">
+                      {showApiKey
+                        ? config.apiKey || ""
+                        : maskApiKey(config.apiKey || "")}
+                    </p>
+                    <Button
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 flex-shrink-0"
+                    >
+                      {showApiKey ? (
+                        <EyeOff className="w-3 h-3" />
+                      ) : (
+                        <Eye className="w-3 h-3" />
                       )}
                     </Button>
                   </div>
@@ -414,7 +411,7 @@ export function AIConfig() {
                 disabled={
                   (formData.provider === "openrouter" &&
                     !formData.apiKey?.trim()) ||
-                  (formData.provider === "openrouter-free") ||
+                  formData.provider === "openrouter-free" ||
                   isTesting
                 }
                 variant="outline"
@@ -470,7 +467,19 @@ export function AIConfig() {
               practices
             </li>
             <li>• Detailed feedback is posted as comments on GitHub</li>
-            <li>• Your API key is used for all AI requests</li>
+            {config.provider === "openrouter" ? (
+              <>  
+                <li>• Your personal API key is used for all AI requests</li>
+                <li>• You have full control over costs and usage limits</li>
+                <li>• Access to premium models with higher quality reviews</li>
+              </>
+            ) : (
+              <>
+                <li>• Free tier with shared resources (no API key required)</li>
+                <li>• Rate limits apply to ensure fair usage for all users</li>
+                <li>• Basic models optimized for code review tasks</li>
+              </>
+            )}
           </ul>
         </div>
       )}
