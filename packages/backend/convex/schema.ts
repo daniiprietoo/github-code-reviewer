@@ -102,8 +102,8 @@ export default defineSchema({
 
   aiConfigurations: defineTable({
     userId: v.id("users"),
-    provider: v.string(), // "openai" | "anthropic" | "google"
-    apiKey: v.string(), // Should be encrypted in production
+    provider: v.union(v.literal("openrouter"), v.literal("openrouter-free")),
+    apiKey: v.optional(v.string()), // Should be encrypted in production
     model: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),

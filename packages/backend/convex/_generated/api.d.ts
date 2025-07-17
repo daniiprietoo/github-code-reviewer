@@ -8,7 +8,6 @@
  * @module
  */
 
-import type * as ai from "../ai.js";
 import type * as auth from "../auth.js";
 import type * as codereview from "../codereview.js";
 import type * as email_index from "../email/index.js";
@@ -18,6 +17,8 @@ import type * as github from "../github.js";
 import type * as http from "../http.js";
 import type * as init from "../init.js";
 import type * as installations from "../installations.js";
+import type * as openrouter_ai from "../openrouter/ai.js";
+import type * as openrouter_aiconfig from "../openrouter/aiconfig.js";
 import type * as pullrequests from "../pullrequests.js";
 import type * as repositories from "../repositories.js";
 import type * as subscriptions from "../subscriptions.js";
@@ -42,7 +43,6 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  ai: typeof ai;
   auth: typeof auth;
   codereview: typeof codereview;
   "email/index": typeof email_index;
@@ -52,6 +52,8 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   init: typeof init;
   installations: typeof installations;
+  "openrouter/ai": typeof openrouter_ai;
+  "openrouter/aiconfig": typeof openrouter_aiconfig;
   pullrequests: typeof pullrequests;
   repositories: typeof repositories;
   subscriptions: typeof subscriptions;

@@ -15,44 +15,45 @@ import { Edit, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface AIConfig {
-  provider: "openai" | "anthropic" | "google";
-  apiKey: string;
+  provider: "openrouter" | "openrouter-free";
+  apiKey?: string;
   model?: string;
 }
 
 const AI_PROVIDERS = {
-  openai: {
-    name: "OpenAI",
-    models: ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"],
-    defaultModel: "gpt-4",
-  },
-  anthropic: {
-    name: "Anthropic Claude",
+  openrouter: {
+    name: "OpenRouter",
     models: [
-      "claude-3-opus-20240229",
-      "claude-3-sonnet-20240229",
-      "claude-3-haiku-20240307",
+      "anthropic/claude-sonnet-4",
+      "google/gemini-2.5-flash",
+      "anthropic/claude-opus-4",
+      "x-ai/grok-4",
+      "google/gemini-2.5-pro",
     ],
-    defaultModel: "claude-3-sonnet-20240229",
+    defaultModel: "anthropic/claude-sonnet-4",
   },
-  google: {
-    name: "Google AI",
-    models: ["gemini-pro", "gemini-pro-vision"],
-    defaultModel: "gemini-pro",
+  "openrouter-free": {
+    name: "OpenRouter Free",
+    models: [
+      "deepseek/deepseek-chat-v3-0324:free",
+      "deepseek/deepseek-r1-0528:free",
+      "moonshotai/kimi-k2:free",
+    ],
+    defaultModel: "deepseek/deepseek-chat-v3-0324:free",
   },
 } as const;
 
 export function AIConfig() {
-  const config = useQuery(api.ai.getUserAIConfig);
-  const setConfig = useMutation(api.ai.setUserAIConfig);
-  const deleteConfig = useMutation(api.ai.deleteUserAIConfig);
-  const testConnection = useAction(api.ai.testAIConnection);
+  const config = useQuery(api.openrouter.aiconfig.getUserAIConfig);
+  const setConfig = useMutation(api.openrouter.aiconfig.setUserAIConfig);
+  const deleteConfig = useMutation(api.openrouter.aiconfig.deleteUserAIConfig);
+  const testConnection = useAction(api.openrouter.ai.testAIConnection);
 
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   const [formData, setFormData] = useState<AIConfig>({
-    provider: "openai",
+    provider: "openrouter",
     apiKey: "",
     model: "",
   });
@@ -67,9 +68,9 @@ export function AIConfig() {
 
   const handleAdd = () => {
     setFormData({
-      provider: "openai",
+      provider: "openrouter",
       apiKey: "",
-      model: AI_PROVIDERS.openai.defaultModel,
+      model: AI_PROVIDERS.openrouter.defaultModel,
     });
     setIsEditing(false);
     setShowForm(true);
@@ -79,9 +80,12 @@ export function AIConfig() {
   const handleEdit = () => {
     if (config) {
       setFormData({
+        apiKey: config.apiKey || "",
         provider: config.provider,
-        apiKey: config.apiKey,
-        model: config.model || AI_PROVIDERS[config.provider].defaultModel,
+        model:
+          config.model ||
+          AI_PROVIDERS[config.provider as keyof typeof AI_PROVIDERS]
+            .defaultModel,
       });
       setIsEditing(true);
       setShowForm(true);
@@ -128,22 +132,25 @@ export function AIConfig() {
     setTestResult(null);
   };
 
-  const handleProviderChange = (
-    provider: "openai" | "anthropic" | "google"
-  ) => {
+  const handleProviderChange = (provider: "openrouter" | "openrouter-free") => {
     setFormData((prev) => ({
       ...prev,
       provider,
-      model: AI_PROVIDERS[provider].defaultModel,
+      apiKey: "",
+      model: AI_PROVIDERS[provider as keyof typeof AI_PROVIDERS].defaultModel,
     }));
     setTestResult(null);
   };
 
   const handleSave = async () => {
-    if (!formData.apiKey.trim()) {
+    if (
+      formData.provider === "openrouter" &&
+      !formData.apiKey?.trim()
+    ) {
       setTestResult({
         success: false,
-        error: "API key is required",
+        error:
+          "API key is required for OpenRouter. Get your API key from OpenRouter Platform",
       });
       return;
     }
@@ -152,8 +159,11 @@ export function AIConfig() {
     try {
       const result = await setConfig({
         provider: formData.provider,
-        apiKey: formData.apiKey.trim(),
-        model: formData.model || AI_PROVIDERS[formData.provider].defaultModel,
+        apiKey: formData.apiKey?.trim(),
+        model:
+          formData.model ||
+          AI_PROVIDERS[formData.provider as keyof typeof AI_PROVIDERS]
+            .defaultModel,
       });
 
       if (result.success) {
@@ -178,7 +188,7 @@ export function AIConfig() {
   };
 
   const handleTest = async () => {
-    if (!formData.apiKey.trim()) {
+    if (!formData.apiKey?.trim()) {
       return;
     }
 
@@ -186,8 +196,11 @@ export function AIConfig() {
     try {
       const result = await testConnection({
         provider: formData.provider,
-        apiKey: formData.apiKey.trim(),
-        model: formData.model || AI_PROVIDERS[formData.provider].defaultModel,
+        apiKey: formData.apiKey?.trim(),
+        model:
+          formData.model ||
+          AI_PROVIDERS[formData.provider as keyof typeof AI_PROVIDERS]
+            .defaultModel,
       });
       setTestResult(result);
     } catch (error) {
@@ -254,7 +267,10 @@ export function AIConfig() {
                   Provider
                 </label>
                 <p className="text-sm font-medium">
-                  {AI_PROVIDERS[config.provider].name}
+                  {
+                    AI_PROVIDERS[config.provider as keyof typeof AI_PROVIDERS]
+                      .name
+                  }
                 </p>
               </div>
               <div>
@@ -262,7 +278,9 @@ export function AIConfig() {
                   Model
                 </label>
                 <p className="text-sm font-medium">
-                  {config.model || AI_PROVIDERS[config.provider].defaultModel}
+                  {config.model ||
+                    AI_PROVIDERS[config.provider as keyof typeof AI_PROVIDERS]
+                      .defaultModel}
                 </p>
               </div>
               <div>
@@ -271,7 +289,9 @@ export function AIConfig() {
                 </label>
                 <div className="flex items-center gap-1">
                   <p className="text-xs font-mono truncate">
-                    {showApiKey ? config.apiKey : maskApiKey(config.apiKey)}
+                    {showApiKey
+                      ? config.apiKey || ""
+                      : maskApiKey(config.apiKey || "")}
                   </p>
                   <Button
                     onClick={() => setShowApiKey(!showApiKey)}
@@ -327,30 +347,29 @@ export function AIConfig() {
             </div>
 
             {/* API Key */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">API Key</label>
-              <Input
-                type="password"
-                placeholder="Enter your API key"
-                value={formData.apiKey}
-                onChange={(e) => updateFormData("apiKey", e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                {formData.provider === "openai" &&
-                  "Get your API key from OpenAI Platform"}
-                {formData.provider === "anthropic" &&
-                  "Get your API key from Anthropic Console"}
-                {formData.provider === "google" &&
-                  "Get your API key from Google AI Studio"}
-              </p>
-            </div>
+            {formData.provider === "openrouter" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">API Key</label>
+                <Input
+                  type="password"
+                  placeholder="Enter your API key"
+                  value={formData.apiKey}
+                  onChange={(e) => updateFormData("apiKey", e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Get your API key from OpenRouter Platform
+                </p>
+              </div>
+            )}
 
             {/* Model Selection */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Model</label>
               <Select
                 value={
-                  formData.model || AI_PROVIDERS[formData.provider].defaultModel
+                  formData.model ||
+                  AI_PROVIDERS[formData.provider as keyof typeof AI_PROVIDERS]
+                    .defaultModel
                 }
                 onValueChange={(model) => updateFormData("model", model)}
               >
@@ -358,7 +377,9 @@ export function AIConfig() {
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
                 <SelectContent>
-                  {AI_PROVIDERS[formData.provider].models.map((model) => (
+                  {AI_PROVIDERS[
+                    formData.provider as keyof typeof AI_PROVIDERS
+                  ].models.map((model) => (
                     <SelectItem key={model} value={model}>
                       {model}
                     </SelectItem>
@@ -386,14 +407,23 @@ export function AIConfig() {
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={handleTest}
-                disabled={!formData.apiKey.trim() || isTesting}
+                disabled={
+                  (formData.provider === "openrouter" &&
+                    !formData.apiKey?.trim()) ||
+                  (formData.provider === "openrouter-free") ||
+                  isTesting
+                }
                 variant="outline"
               >
                 {isTesting ? "Testing..." : "Test Connection"}
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={!formData.apiKey.trim() || isSaving}
+                disabled={
+                  (formData.provider === "openrouter" &&
+                    !formData.apiKey?.trim()) ||
+                  isSaving
+                }
               >
                 {isSaving
                   ? "Saving..."

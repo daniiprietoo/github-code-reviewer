@@ -17,6 +17,7 @@
     "@octokit/auth-app": "^8.0.1",
     "@octokit/rest": "^22.0.0",
     "@octokit/webhooks": "^14.1.0",
+    "@openrouter/ai-sdk-provider": "^1.0.0-beta.1",
     "@polar-sh/sdk": "^0.26.1",
     "convex": "^1.19.2",
     "convex-helpers": "^0.1.63",

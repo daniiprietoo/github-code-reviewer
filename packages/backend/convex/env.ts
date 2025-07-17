@@ -16,6 +16,7 @@ export const env = createEnv({
     GITHUB_APP_CLIENT_SECRET: z.string().min(1),
     GITHUB_APP_PRIVATE_KEY: z.string().min(1),
     GITHUB_APP_WEBHOOK_SECRET: z.string().min(1),
+    OPENROUTER_API_KEY: z.string().min(1),
   },
   runtimeEnv: {
     LOOPS_FORM_ID: process.env.LOOPS_FORM_ID,
@@ -31,6 +32,7 @@ export const env = createEnv({
     GITHUB_APP_CLIENT_SECRET: process.env.GITHUB_APP_CLIENT_SECRET,
     GITHUB_APP_PRIVATE_KEY: process.env.GITHUB_APP_PRIVATE_KEY,
     GITHUB_APP_WEBHOOK_SECRET: process.env.GITHUB_APP_WEBHOOK_SECRET,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
   },
   skipValidation: !process.env.VALIDATE_ENV,
 });
