@@ -31,7 +31,7 @@ export interface CodeReviewResponse {
 export const testAIConnection = action({
   args: {
     provider: v.union(v.literal("openrouter"), v.literal("openrouter-free")),
-    apiKey: v.optional(v.string()),
+    apiKey: v.string(),
     model: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ success: boolean; error?: string }> => {

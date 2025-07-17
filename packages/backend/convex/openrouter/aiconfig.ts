@@ -8,7 +8,7 @@ export type AIProvider = "openrouter" | "openrouter-free";
 
 export interface AIConfig {
   provider: AIProvider;
-  apiKey?: string;
+  apiKey: string;
   model?: string;
 }
 
@@ -27,7 +27,7 @@ export const getUserAIConfig = query({
     return config
       ? {
           provider: config.provider as AIProvider,
-          apiKey: config.apiKey,
+          apiKey: config.apiKey || "",
           model: config.model,
         }
       : null;
@@ -158,7 +158,7 @@ export const getUserAIConfigInternal = internalQuery({
     return config
       ? {
           provider: config.provider as AIProvider,
-          apiKey: config.apiKey,
+          apiKey: config.apiKey || "",
           model: config.model,
         }
       : null;
