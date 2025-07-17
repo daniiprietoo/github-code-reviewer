@@ -36,10 +36,7 @@ export const getUserAIConfig = query({
 
 export const setUserAIConfig = mutation({
   args: {
-    provider: v.union(
-      v.literal("openrouter"),
-      v.literal("openrouter-free"),
-    ),
+    provider: v.union(v.literal("openrouter"), v.literal("openrouter-free")),
     apiKey: v.optional(v.string()),
     model: v.optional(v.string()),
   },
@@ -108,7 +105,10 @@ const validateApiKey = (apiKey: string | undefined) => {
   }
 
   if (apiKey.length < 10) {
-    return { success: false, error: "API key must be at least 10 characters long" };
+    return {
+      success: false,
+      error: "API key must be at least 10 characters long",
+    };
   }
 
   if (apiKey.length > 500) {
