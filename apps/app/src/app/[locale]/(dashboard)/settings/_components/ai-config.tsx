@@ -287,6 +287,7 @@ export function AIConfig() {
                 <label className="text-sm font-medium text-muted-foreground">
                   API Key
                 </label>
+                {config.provider === "openrouter" ? (
                 <div className="flex items-center gap-1">
                   <p className="text-xs font-mono truncate">
                     {showApiKey
@@ -303,9 +304,12 @@ export function AIConfig() {
                       <EyeOff className="w-3 h-3" />
                     ) : (
                       <Eye className="w-3 h-3" />
-                    )}
-                  </Button>
-                </div>
+                      )}
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="text-xs font-mono truncate">Free</p>
+                )}
               </div>
             </div>
           </div>
