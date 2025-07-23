@@ -10,7 +10,6 @@ const LayoutContainer = ({ children }: { children: React.ReactNode }) => {
   const t = useScopedI18n("settings.sidebar");
   const pathname = usePathname();
   const isSettingsPath = pathname === "/settings";
-  const isBillingPath = pathname === "/settings/billing";
   return (
     <div className="flex h-full w-full px-6 py-8">
       <div className="mx-auto flex h-full w-full max-w-screen-xl gap-12">
@@ -28,20 +27,6 @@ const LayoutContainer = ({ children }: { children: React.ReactNode }) => {
               )}
             >
               {t("general")}
-            </span>
-          </Link>
-          <Link
-            href="/settings/billing"
-            className={cn(
-              `${buttonVariants({ variant: "ghost" })} ${isBillingPath && "bg-primary/5"} justify-start rounded-md`
-            )}
-          >
-            <span
-              className={cn(
-                `text-sm text-primary/80 ${isBillingPath && "font-medium text-primary"}`
-              )}
-            >
-              {t("billing")}
             </span>
           </Link>
         </div>

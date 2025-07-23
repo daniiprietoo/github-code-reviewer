@@ -77,7 +77,9 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_github_id", ["githubId"])
-    .index("by_repository", ["repositoryId"]),
+    .index("by_repository", ["repositoryId"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_repository_and_created_at", ["repositoryId", "createdAt"]),
 
   codeReviews: defineTable({
     pullRequestId: v.id("pullRequests"),

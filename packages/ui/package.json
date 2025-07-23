@@ -37,7 +37,8 @@
     "./scroll-area": "./src/components/scroll-area.tsx",
     "./upload-input": "./src/components/upload-input.tsx",
     "./tailwind.config": "./tailwind.config.ts",
-    "./postcss": "./postcss.config.js"
+    "./postcss": "./postcss.config.js",
+    "./skeleton": "./src/components/skeleton.tsx"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",
