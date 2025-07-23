@@ -2,15 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internalQuery, mutation, query } from "../_generated/server";
 import { env } from "../env";
-
-// AI Provider types
-export type AIProvider = "openrouter" | "openrouter-free";
-
-export interface AIConfig {
-  provider: AIProvider;
-  apiKey: string;
-  model?: string;
-}
+import type { AIConfig, AIProvider } from "../utils/validators";
 
 // User AI Configuration Management
 export const getUserAIConfig = query({

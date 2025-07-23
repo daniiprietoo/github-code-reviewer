@@ -1,23 +1,21 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
 import {
   type ActionCtx,
-  type QueryCtx,
   internalAction,
   internalMutation,
   internalQuery,
   query,
 } from "./_generated/server";
-import type { CodeReviewResponse } from "./openrouter/ai";
+import type { CodeReviewOutputSchema } from "./utils/validators";
 import { PULL_REQUEST_STATUS } from "./utils/constants";
 import {
   createGitHubApp,
-  getUserGitHubId,
   hasRepositoryAccess,
 } from "./utils/github";
 import type { PullRequest } from "./utils/validators";
+import { NoObjectGeneratedError } from "ai";
 
 export const processPullRequest = internalAction({
   args: {
@@ -89,7 +87,7 @@ async function processCodeReview(
     }
 
     // Try to get AI analysis
-    let aiReview: CodeReviewResponse | null = null;
+    let aiReview: CodeReviewOutputSchema | null = null;
     try {
       // Get PR diff content
       const diffResponse = await octokit.rest.pulls.get({
@@ -125,6 +123,9 @@ async function processCodeReview(
 
       console.log("AI review generated successfully");
     } catch (error) {
+      if (NoObjectGeneratedError.isInstance(error)) {
+        throw new Error(`No object generated from OpenRouter: ${error.cause}`);
+      }
       console.error("AI review failed, falling back to basic comment:", error);
       // Continue with basic comment if AI fails
     }
@@ -179,7 +180,7 @@ async function processCodeReview(
 
 function generateAIReviewComment(
   pullRequest: PullRequest,
-  aiReview: CodeReviewResponse,
+  aiReview: CodeReviewOutputSchema,
 ): string {
   const findingsByType = aiReview.findings.reduce(
     (acc, finding) => {

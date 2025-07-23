@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@github-code-reviewer/ui/dropdown-menu";
-import { Logo } from "@github-code-reviewer/ui/logo";
 import { cn } from "@github-code-reviewer/ui/utils";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
 import {
@@ -41,7 +40,6 @@ export function Navigation({
   const router = useRouter();
   const isDashboardPath = pathname === "/";
   const isSettingsPath = pathname === "/settings";
-  const isBillingPath = pathname === "/settings/billing";
 
   const user = usePreloadedQuery(preloadedUser);
   const products = usePreloadedQuery(preloadedProducts);
@@ -58,8 +56,8 @@ export function Navigation({
   }
 
   return (
-    <nav className="sticky top-0 z-50 flex w-full flex-col bg-card px-6 pb-3">
-      <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between py-3">
+    <nav className="sticky top-0 z-50 flex w-full flex-col bg-card px-6 pb-2 py-3">
+      <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between border-b border-primary/10 py-3">
         <div className="flex h-10 items-center gap-2">
           <Link href="/" className="flex h-10 items-center gap-1">
             <Image src="/favicon.ico" alt="logo" width={50} height={50} />
@@ -136,6 +134,43 @@ export function Navigation({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+
+        {/* Navigation tabs with individual indicators for perfect alignment */}
+        <div className="relative flex items-center gap-2">
+          <Link
+            href="/"
+            className={cn(
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl transition-colors duration-200 hover:text-primary flex-1 justify-center relative`,
+              isDashboardPath && "text-primary"
+            )}
+          >
+            Dashboard
+            {/* Individual indicator for perfect alignment */}
+            <div
+              className={cn(
+                "absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity duration-300",
+                isDashboardPath ? "opacity-100" : "opacity-0"
+              )}
+            />
+          </Link>
+
+          <Link
+            href="/settings"
+            className={cn(
+              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl transition-colors duration-200 hover:text-primary flex-1 justify-center relative`,
+              isSettingsPath && "text-primary"
+            )}
+          >
+            Settings
+            {/* Individual indicator for perfect alignment */}
+            <div
+              className={cn(
+                "absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity duration-300",
+                isSettingsPath ? "opacity-100" : "opacity-0"
+              )}
+            />
+          </Link>
         </div>
 
         <div className="flex h-10 items-center gap-3">
@@ -227,54 +262,6 @@ export function Navigation({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-
-      <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3 justify-center">
-        <div
-          className={cn(
-            "flex items-center",
-            isDashboardPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
-          )}
-        >
-          <Link
-            href="/"
-            className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
-            )}
-          >
-            Dashboard
-          </Link>
-        </div>
-        <div
-          className={cn(
-            "flex items-center",
-            isSettingsPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
-          )}
-        >
-          <Link
-            href="/settings"
-            className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
-            )}
-          >
-            Settings
-          </Link>
-        </div>
-        <div
-          className={cn(
-            "flex items-center",
-            isBillingPath ? "bg-primary/10 rounded-3xl" : "bg-transparent"
-          )}
-        >
-          <Link
-            href="/settings/billing"
-            className={cn(
-              `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl px-4 py-2 transition-colors`
-            )}
-          >
-            Billing
-          </Link>
         </div>
       </div>
     </nav>

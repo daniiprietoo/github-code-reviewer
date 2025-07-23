@@ -165,3 +165,36 @@ async function getUserAccessiblePullRequests(
     }),
   );
 }
+
+export const getPullRequestsForRepository = query({
+  args: {
+    repositoryId: v.id("repositories"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+
+    const repository = await ctx.db.get(args.repositoryId);
+    if (!repository) {
+      return [];
+    }
+
+    const pullRequests = await ctx.db.query("pullRequests").withIndex("by_repository", (q) => q.eq("repositoryId", args.repositoryId)).collect();
+
+    return await Promise.all(
+      pullRequests.map(async (pr) => {
+        const codeReviews = await ctx.db
+          .query("codeReviews")
+          .withIndex("by_pull_request", (q) => q.eq("pullRequestId", pr._id))
+          .collect();
+
+        return {
+          ...pr,
+          codeReviews,
+        };
+      }),
+    );
+  },
+});

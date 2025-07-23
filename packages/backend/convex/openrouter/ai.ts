@@ -1,92 +1,14 @@
+import { createOpenRouter, openrouter } from "@openrouter/ai-sdk-provider";
+import { NoObjectGeneratedError, generateObject, generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { action, internalAction } from "../_generated/server";
-import type { AIConfig } from "./aiconfig";
-
-export interface CodeReviewRequest {
-  pullRequestTitle: string;
-  pullRequestBody?: string;
-  diffContent: string;
-  files: Array<{
-    filename: string;
-    patch?: string;
-    additions: number;
-    deletions: number;
-  }>;
-}
-
-export interface CodeReviewResponse {
-  summary: string;
-  overallScore: number;
-  findings: Array<{
-    type: "improvement" | "issue" | "praise";
-    severity: "low" | "medium" | "high";
-    message: string;
-    file?: string;
-    line?: number;
-  }>;
-  suggestions: string[];
-}
-
-// JSON Schema for structured output
-const CODE_REVIEW_SCHEMA = {
-  type: "object",
-  properties: {
-    summary: {
-      type: "string",
-      description: "Brief overall summary of the changes and code quality",
-    },
-    overallScore: {
-      type: "number",
-      description: "Overall code quality score from 0 to 100",
-      minimum: 0,
-      maximum: 100,
-    },
-    findings: {
-      type: "array",
-      description: "Detailed findings from the code review",
-      items: {
-        type: "object",
-        properties: {
-          type: {
-            type: "string",
-            enum: ["improvement", "issue", "praise"],
-            description: "Type of finding",
-          },
-          severity: {
-            type: "string",
-            enum: ["low", "medium", "high"],
-            description: "Severity level of the finding",
-          },
-          message: {
-            type: "string",
-            description: "Detailed explanation of the finding",
-          },
-          file: {
-            type: "string",
-            description: "File path where the finding was detected (optional)",
-          },
-          line: {
-            type: "number",
-            description:
-              "Line number where the finding was detected (optional)",
-          },
-        },
-        required: ["type", "severity", "message"],
-        additionalProperties: false,
-      },
-    },
-    suggestions: {
-      type: "array",
-      description: "List of actionable suggestions for improvement",
-      items: {
-        type: "string",
-      },
-    },
-  },
-  required: ["summary", "overallScore", "findings", "suggestions"],
-  additionalProperties: false,
-} as const;
+import {
+  type AIConfig,
+  CODE_REVIEW_SCHEMA,
+  type CodeReviewOutputSchema,
+  type CodeReviewRequest,
+} from "../utils/validators";
 
 export const testAIConnection = action({
   args: {
@@ -96,13 +18,17 @@ export const testAIConnection = action({
   },
   handler: async (ctx, args): Promise<{ success: boolean; error?: string }> => {
     try {
-      const aiService = createAIService(args);
+      if (!args.model) {
+        throw new Error("Model is required");
+      }
 
-      // Test with a simple prompt
-      await aiService.generateResponse(
-        "Test connection. Please respond with 'OK' if you can read this.",
-        { maxTokens: 10 },
-      );
+      const response = await generateText({
+        model: openrouter(args.apiKey, {
+          models: [args.model],
+        }),
+        prompt:
+          "Test connection. Please respond with 'OK' if you can read this.",
+      });
 
       return { success: true };
     } catch (error) {
@@ -114,70 +40,10 @@ export const testAIConnection = action({
   },
 });
 
-// AI Service Implementation
-class AIService {
-  private config: AIConfig;
-
-  constructor(config: AIConfig) {
-    this.config = config;
-  }
-
-  async generateCodeReview(
-    request: CodeReviewRequest,
-  ): Promise<CodeReviewResponse> {
-    const prompt = this.buildCodeReviewPrompt(request);
-
-    try {
-      // Use structured output for code review
-      const response = await this.generateStructuredResponse(
-        prompt,
-        CODE_REVIEW_SCHEMA,
-        {
-          maxTokens: 2000,
-          temperature: 0.3,
-        },
-      );
-
-      return this.validateCodeReviewResponse(response);
-    } catch (error) {
-      console.error("AI code review generation failed:", error);
-      throw new Error(
-        `AI analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
-  }
-
-  async generateResponse(
-    prompt: string,
-    options: { maxTokens?: number; temperature?: number } = {},
-  ): Promise<string> {
-    switch (this.config.provider) {
-      case "openrouter":
-        return this.callOpenRouter(prompt, options);
-      case "openrouter-free":
-        return this.callOpenRouter(prompt, options);
-      default:
-        throw new Error(`Unsupported AI provider: ${this.config.provider}`);
-    }
-  }
-
-  async generateStructuredResponse<T>(
-    prompt: string,
-    schema: object,
-    options: { maxTokens?: number; temperature?: number } = {},
-  ): Promise<T> {
-    switch (this.config.provider) {
-      case "openrouter":
-        return this.callOpenRouterStructured<T>(prompt, schema, options);
-      case "openrouter-free":
-        return this.callOpenRouterStructured<T>(prompt, schema, options);
-      default:
-        throw new Error(`Unsupported AI provider: ${this.config.provider}`);
-    }
-  }
-
-  private buildCodeReviewPrompt(request: CodeReviewRequest): string {
-    return `You are an expert code reviewer. Analyze this pull request and provide a comprehensive review focusing on code quality, security, performance, and best practices.
+async function buildCodeReviewPrompt(
+  request: CodeReviewRequest,
+): Promise<string> {
+  return `You are an expert code reviewer. Analyze this pull request and provide a comprehensive review focusing on code quality, security, performance, and best practices.
 
 **Pull Request Details:**
 Title: ${request.pullRequestTitle}
@@ -189,186 +55,117 @@ ${request.files
   .join("\n")}
 
 **Diff Content:**
-\`\`\`diff
 ${request.diffContent}
-\`\`\`
 
-Please analyze the code changes and provide:
+CRITICAL FORMATTING INSTRUCTIONS:
+- Respond ONLY with valid JSON
+- DO NOT use backticks (') in any field values - use single quotes (') instead
+- DO NOT use markdown formatting like **bold** or *italic*
+- DO NOT include code blocks or markdown syntax
+- When mentioning code elements, use single quotes instead of backticks
+- Example: Use 'PullRequestsSection' instead of \`PullRequestsSection\`
 
-1. **Summary**: Brief overview of what was changed and overall quality assessment
-2. **Overall Score**: Rate the code quality from 0-100 considering:
-   - Code correctness and functionality
-   - Security considerations
-   - Performance implications  
-   - Code maintainability and readability
-   - Best practices adherence
-   - Testing coverage (if applicable)
-
-3. **Findings**: Specific issues, improvements, or praise with:
-   - Type: "issue" (problems to fix), "improvement" (suggestions), or "praise" (good practices)
-   - Severity: "high" (critical), "medium" (important), or "low" (minor)
-   - Clear explanation with context
-   - File and line references when possible
-
-4. **Suggestions**: Actionable recommendations for improvement
-
-Be constructive, specific, and focus on the most impactful feedback.`;
-  }
-
-  private validateCodeReviewResponse(response: unknown): CodeReviewResponse {
-    // Validate the response structure and apply defaults/sanitization
-    const res = response as Record<string, unknown>;
-    return {
-      summary:
-        (typeof res.summary === "string" ? res.summary : null) ||
-        "Code review completed",
-      overallScore: Math.max(
-        0,
-        Math.min(
-          100,
-          (typeof res.overallScore === "number" ? res.overallScore : null) ||
-            50,
-        ),
-      ),
-      findings: Array.isArray(res.findings)
-        ? res.findings.map((finding: unknown) => {
-            const f = finding as Record<string, unknown>;
-            return {
-              type: (["improvement", "issue", "praise"].includes(
-                f.type as string,
-              )
-                ? f.type
-                : "improvement") as "improvement" | "issue" | "praise",
-              severity: (["low", "medium", "high"].includes(
-                f.severity as string,
-              )
-                ? f.severity
-                : "low") as "low" | "medium" | "high",
-              message:
-                (typeof f.message === "string" ? f.message : null) ||
-                "No message provided",
-              file: typeof f.file === "string" ? f.file : undefined,
-              line: typeof f.line === "number" ? f.line : undefined,
-            };
-          })
-        : [],
-      suggestions: Array.isArray(res.suggestions)
-        ? res.suggestions.filter((s): s is string => typeof s === "string")
-        : [],
-    };
-  }
-
-  private async callOpenRouter(
-    prompt: string,
-    options: { maxTokens?: number; temperature?: number },
-  ): Promise<string> {
-    const model = this.config.model || "deepseek/deepseek-chat-v3-0324:free";
-    const body = {
-      model,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert code reviewer. Provide detailed, constructive feedback on code changes.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      max_tokens: options.maxTokens ?? 2000,
-      temperature: options.temperature ?? 0.3,
-    };
-
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.config.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`OpenRouter API error: ${error}`);
+Required JSON format with these exact fields:
+{
+  "summary": "Brief overview of changes and quality assessment",
+  "overallScore": 75,
+  "findings": [
+    {
+      "type": "issue" | "improvement" | "praise",
+      "severity": "low" | "medium" | "high", 
+      "message": "Clear explanation (use single quotes for code references)",
+      "file": "optional file path",
+      "line": 123
     }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || "";
-  }
-
-  private async callOpenRouterStructured<T>(
-    prompt: string,
-    schema: object,
-    options: { maxTokens?: number; temperature?: number },
-  ): Promise<T> {
-    const model = this.config.model || "anthropic/claude-sonnet-4";
-    const body = {
-      model,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert code reviewer. Analyze code changes and provide structured feedback.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      max_tokens: options.maxTokens ?? 2000,
-      temperature: options.temperature ?? 0.3,
-      response_format: {
-        type: "json_schema",
-        json_schema: {
-          name: "code_review",
-          strict: true,
-          schema: schema,
-        },
-      },
-    };
-
-    const response = await fetch(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.config.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`OpenRouter API error: ${error}`);
-    }
-
-    const data = await response.json();
-    const content = data.choices[0]?.message?.content;
-
-    if (!content) {
-      throw new Error("No content received from OpenRouter");
-    }
-
-    try {
-      return JSON.parse(content) as T;
-    } catch (error) {
-      throw new Error(
-        `Failed to parse structured response: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
-  }
+  ],
+  "suggestions": ["List of actionable recommendations"]
 }
 
-// Factory function to create AI service
-function createAIService(config: AIConfig): AIService {
-  return new AIService(config);
+Focus on the most impactful feedback. Be constructive and specific.`;
+}
+
+function getOpenRouterProvider(apiKey: string) {
+  return createOpenRouter({
+    apiKey,
+  });
+}
+
+async function callOpenRouterStructured(
+  prompt: string,
+  aiconfig: AIConfig,
+  options: { maxTokens?: number; temperature?: number },
+): Promise<CodeReviewOutputSchema> {
+  if (!aiconfig.model) {
+    throw new Error("Model is required");
+  }
+
+  const openrouter = getOpenRouterProvider(aiconfig.apiKey);
+
+  // Increase token limits and add retry logic
+  const maxRetries = 2;
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await generateObject({
+        model: openrouter.chat(aiconfig.model),
+        schema: CODE_REVIEW_SCHEMA,
+        schemaName: "code_review",
+        schemaDescription:
+          "A detailed code review with summary, score, findings, and suggestions",
+        prompt,
+        system: `You are an expert code reviewer. Analyze code changes and provide structured feedback in valid JSON format.
+
+CRITICAL JSON FORMATTING RULES:
+1. Your response must be a complete, valid JSON object with ALL required fields
+2. NEVER use backticks (\`) in any field - use single quotes (') instead
+3. NEVER include markdown code blocks or formatting
+4. NEVER include tool call markers or special characters
+5. Escape quotes properly in JSON strings
+6. Ensure all JSON objects and arrays are properly closed
+
+Required JSON structure:
+{
+  "summary": "string - brief overview",
+  "overallScore": number (0-100),
+  "findings": [...],
+  "suggestions": [...]
+}`,
+        maxTokens: options.maxTokens ?? 4000,
+        temperature: options.temperature ?? 0.3,
+        mode: "json",
+      });
+
+      console.log("AI review generated successfully:", {
+        hasObject: !!response.object,
+        usage: response.usage,
+        attempt,
+      });
+
+      // Validate the response has all required fields
+      if (
+        !response.object.summary ||
+        typeof response.object.overallScore !== "number"
+      ) {
+        throw new Error("Incomplete response: missing required fields");
+      }
+
+      return response.object;
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`AI generation attempt ${attempt} failed:`, error);
+
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  // If all retries failed, throw the last error
+  throw lastError || new Error("AI generation failed after all retries");
 }
 
 // Internal action to generate AI code review
@@ -389,7 +186,7 @@ export const generateAICodeReview = internalAction({
       ),
     }),
   },
-  handler: async (ctx, args): Promise<CodeReviewResponse> => {
+  handler: async (ctx, args): Promise<CodeReviewOutputSchema> => {
     // Get user's AI configuration
     const config = await ctx.runQuery(
       internal.openrouter.aiconfig.getUserAIConfigInternal,
@@ -412,13 +209,51 @@ export const generateAICodeReview = internalAction({
       throw new Error("No API key available for AI analysis");
     }
 
-    const aiService = createAIService(config);
-
-    return await aiService.generateCodeReview({
+    const prompt = await buildCodeReviewPrompt({
       pullRequestTitle: args.pullRequestData.title,
       pullRequestBody: args.pullRequestData.body,
       diffContent: args.pullRequestData.diffContent,
       files: args.pullRequestData.files,
     });
+
+    console.log("Generating AI code review with config:", {
+      provider: config.provider,
+      model: config.model,
+      hasApiKey: !!config.apiKey,
+      diffLength: args.pullRequestData.diffContent.length,
+      filesCount: args.pullRequestData.files.length,
+    });
+
+    try {
+      const result = await callOpenRouterStructured(prompt, config, {
+        maxTokens: 4000,
+        temperature: 0.3,
+      });
+
+      console.log("AI code review generated successfully:", {
+        summaryLength: result.summary.length,
+        overallScore: result.overallScore,
+        findingsCount: result.findings.length,
+        suggestionsCount: result.suggestions.length,
+      });
+
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("AI code review generation failed:", {
+        error: errorMessage,
+        provider: config.provider,
+        model: config.model,
+        diffLength: args.pullRequestData.diffContent.length,
+      });
+
+      if (NoObjectGeneratedError.isInstance(error)) {
+        throw new Error(`No object generated from OpenRouter: ${error.cause}`);
+      }
+
+      // Re-throw with more context
+      throw new Error(`AI code review failed: ${errorMessage}`);
+    }
   },
 });

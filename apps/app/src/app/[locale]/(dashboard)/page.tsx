@@ -1,4 +1,3 @@
-import { Header } from "@/app/[locale]/(dashboard)/_components/header";
 import { getScopedI18n } from "@/locales/server";
 
 export const metadata = {
@@ -7,12 +6,28 @@ export const metadata = {
 
 import { buttonVariants } from "@github-code-reviewer/ui/button";
 import { cn } from "@github-code-reviewer/ui/utils";
-import { Github, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
+import RecentPullRequestList from "./_components/recent-pull-request-list";
 import RepositoryList from "./_components/repository-list";
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 
 export default async function Page() {
   const t = await getScopedI18n("dashboard");
+
+  const preloadedPullRequests = await preloadQuery(
+    api.pullrequests.getRecentPullRequests,
+    { limit: 5 },
+    { token: await convexAuthNextjsToken() }
+  );
+
+  const preloadedRepositories = await preloadQuery(
+    api.repositories.getUserRepositories,
+    {},
+    { token: await convexAuthNextjsToken() }
+  );
 
   return (
     <>
@@ -43,7 +58,10 @@ export default async function Page() {
                 </Link>
               </div>
             </div>
-            <RepositoryList />
+            <div className="w-full p-6 space-y-8">
+              <RepositoryList preloadedRepositories={preloadedRepositories} />
+              <RecentPullRequestList preloadedPullRequests={preloadedPullRequests} />
+            </div>
           </div>
         </div>
       </div>
