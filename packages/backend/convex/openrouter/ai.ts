@@ -1,4 +1,4 @@
-import { openrouter } from "@openrouter/ai-sdk-provider";
+import { createOpenRouter, openrouter } from "@openrouter/ai-sdk-provider";
 import { generateObject, generateText, NoObjectGeneratedError } from "ai";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
@@ -81,17 +81,26 @@ Please analyze the code changes and provide:
 Be constructive, specific, and focus on the most impactful feedback.`;
 }
 
+function getOpenRouterProvider(apiKey: string) {
+  return createOpenRouter({
+    apiKey,
+  });
+}
+
 async function callOpenRouterStructured(
   prompt: string,
   aiconfig: AIConfig,
   options: { maxTokens?: number; temperature?: number },
 ): Promise<CodeReviewOutputSchema> {
-  const model = aiconfig.model || "anthropic/claude-sonnet-4";
+
+  if (!aiconfig.model) {
+    throw new Error("Model is required");
+  }
+
+  const openrouter = getOpenRouterProvider(aiconfig.apiKey);
 
   const response = await generateObject({
-    model: openrouter(aiconfig.apiKey, {
-      models: [model],
-    }),
+    model: openrouter.chat(aiconfig.model),
     schema: CODE_REVIEW_SCHEMA,
     schemaName: "code_review",
     schemaDescription: "A detailed code review of the changes",
