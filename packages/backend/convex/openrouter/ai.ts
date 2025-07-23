@@ -55,30 +55,33 @@ ${request.files
   .join("\n")}
 
 **Diff Content:**
-\`\`\`diff
 ${request.diffContent}
-\`\`\`
 
-Please analyze the code changes and provide:
+CRITICAL FORMATTING INSTRUCTIONS:
+- Respond ONLY with valid JSON
+- DO NOT use backticks (') in any field values - use single quotes (') instead
+- DO NOT use markdown formatting like **bold** or *italic*
+- DO NOT include code blocks or markdown syntax
+- When mentioning code elements, use single quotes instead of backticks
+- Example: Use 'PullRequestsSection' instead of \`PullRequestsSection\`
 
-1. **Summary**: Brief overview of what was changed and overall quality assessment
-2. **Overall Score**: Rate the code quality from 0-100 considering:
-   - Code correctness and functionality
-   - Security considerations
-   - Performance implications  
-   - Code maintainability and readability
-   - Best practices adherence
-   - Testing coverage (if applicable)
+Required JSON format with these exact fields:
+{
+  "summary": "Brief overview of changes and quality assessment",
+  "overallScore": 75,
+  "findings": [
+    {
+      "type": "issue" | "improvement" | "praise",
+      "severity": "low" | "medium" | "high", 
+      "message": "Clear explanation (use single quotes for code references)",
+      "file": "optional file path",
+      "line": 123
+    }
+  ],
+  "suggestions": ["List of actionable recommendations"]
+}
 
-3. **Findings**: Specific issues, improvements, or praise with:
-   - Type: "issue" (problems to fix), "improvement" (suggestions), or "praise" (good practices)
-   - Severity: "high" (critical), "medium" (important), or "low" (minor)
-   - Clear explanation with context
-   - File and line references when possible
-
-4. **Suggestions**: Actionable recommendations for improvement
-
-Be constructive, specific, and focus on the most impactful feedback.`;
+Focus on the most impactful feedback. Be constructive and specific.`;
 }
 
 function getOpenRouterProvider(apiKey: string) {
@@ -113,16 +116,22 @@ async function callOpenRouterStructured(
         prompt,
         system: `You are an expert code reviewer. Analyze code changes and provide structured feedback in valid JSON format.
 
-CRITICAL: Your response must be a complete, valid JSON object with ALL required fields:
+CRITICAL JSON FORMATTING RULES:
+1. Your response must be a complete, valid JSON object with ALL required fields
+2. NEVER use backticks (\`) in any field - use single quotes (') instead
+3. NEVER include markdown code blocks or formatting
+4. NEVER include tool call markers or special characters
+5. Escape quotes properly in JSON strings
+6. Ensure all JSON objects and arrays are properly closed
+
+Required JSON structure:
 {
   "summary": "string - brief overview",
   "overallScore": number (0-100),
   "findings": [...],
   "suggestions": [...]
-}
-
-Do not truncate or omit any required fields.`,
-        maxTokens: options.maxTokens ?? 4000, // Increased from 2000
+}`,
+        maxTokens: options.maxTokens ?? 4000,
         temperature: options.temperature ?? 0.3,
       });
 
