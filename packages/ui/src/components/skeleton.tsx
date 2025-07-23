@@ -1,4 +1,4 @@
-import { cn } from "../utils/index"
+import { cn } from "../utils/index";
 
 function Skeleton({
   className,
@@ -9,7 +9,7 @@ function Skeleton({
       className={cn("animate-pulse rounded-md bg-primary/10", className)}
       {...props}
     />
-  )
+  );
 }
 
 export function PullRequestSkeleton() {
@@ -86,4 +86,4 @@ export function RepositoryListSkeleton() {
   );
 }
 
-export { Skeleton }
+export { Skeleton };

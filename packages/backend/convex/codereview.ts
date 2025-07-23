@@ -1,20 +1,17 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
 import {
   type ActionCtx,
-  type QueryCtx,
   internalAction,
   internalMutation,
   internalQuery,
   query,
 } from "./_generated/server";
-import type { CodeReviewResponse } from "./openrouter/ai";
+import type { CodeReviewResponse } from "./utils/validators";
 import { PULL_REQUEST_STATUS } from "./utils/constants";
 import {
   createGitHubApp,
-  getUserGitHubId,
   hasRepositoryAccess,
 } from "./utils/github";
 import type { PullRequest } from "./utils/validators";
