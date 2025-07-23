@@ -1,15 +1,14 @@
 import { createOpenRouter, openrouter } from "@openrouter/ai-sdk-provider";
-import { generateObject, generateText, NoObjectGeneratedError } from "ai";
+import { NoObjectGeneratedError, generateObject, generateText } from "ai";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { action, internalAction } from "../_generated/server";
 import {
-  CODE_REVIEW_SCHEMA,
   type AIConfig,
+  CODE_REVIEW_SCHEMA,
   type CodeReviewOutputSchema,
   type CodeReviewRequest,
 } from "../utils/validators";
-
 
 export const testAIConnection = action({
   args: {
@@ -27,7 +26,8 @@ export const testAIConnection = action({
         model: openrouter(args.apiKey, {
           models: [args.model],
         }),
-        prompt: "Test connection. Please respond with 'OK' if you can read this.",
+        prompt:
+          "Test connection. Please respond with 'OK' if you can read this.",
       });
 
       return { success: true };
@@ -92,29 +92,70 @@ async function callOpenRouterStructured(
   aiconfig: AIConfig,
   options: { maxTokens?: number; temperature?: number },
 ): Promise<CodeReviewOutputSchema> {
-
   if (!aiconfig.model) {
     throw new Error("Model is required");
   }
 
   const openrouter = getOpenRouterProvider(aiconfig.apiKey);
 
-  const response = await generateObject({
-    model: openrouter.chat(aiconfig.model),
-    schema: CODE_REVIEW_SCHEMA,
-    schemaName: "code_review",
-    schemaDescription: "A detailed code review of the changes",
-    prompt,
-    system:
-      "You are an expert code reviewer. Analyze code changes and provide structured feedback.",
-    maxTokens: options.maxTokens ?? 2000,
-    temperature: options.temperature ?? 0.3,
-  });
+  // Increase token limits and add retry logic
+  const maxRetries = 2;
+  let lastError: Error | null = null;
 
-  console.log(response.object);
-  console.log(response.usage);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await generateObject({
+        model: openrouter.chat(aiconfig.model),
+        schema: CODE_REVIEW_SCHEMA,
+        schemaName: "code_review",
+        schemaDescription:
+          "A detailed code review with summary, score, findings, and suggestions",
+        prompt,
+        system: `You are an expert code reviewer. Analyze code changes and provide structured feedback in valid JSON format.
 
-  return response.object;
+CRITICAL: Your response must be a complete, valid JSON object with ALL required fields:
+{
+  "summary": "string - brief overview",
+  "overallScore": number (0-100),
+  "findings": [...],
+  "suggestions": [...]
+}
+
+Do not truncate or omit any required fields.`,
+        maxTokens: options.maxTokens ?? 4000, // Increased from 2000
+        temperature: options.temperature ?? 0.3,
+      });
+
+      console.log("AI review generated successfully:", {
+        hasObject: !!response.object,
+        usage: response.usage,
+        attempt,
+      });
+
+      // Validate the response has all required fields
+      if (
+        !response.object.summary ||
+        typeof response.object.overallScore !== "number"
+      ) {
+        throw new Error("Incomplete response: missing required fields");
+      }
+
+      return response.object;
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`AI generation attempt ${attempt} failed:`, error);
+
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+
+  // If all retries failed, throw the last error
+  throw lastError || new Error("AI generation failed after all retries");
 }
 
 // Internal action to generate AI code review
@@ -165,18 +206,44 @@ export const generateAICodeReview = internalAction({
       files: args.pullRequestData.files,
     });
 
+    console.log("Generating AI code review with config:", {
+      provider: config.provider,
+      model: config.model,
+      hasApiKey: !!config.apiKey,
+      diffLength: args.pullRequestData.diffContent.length,
+      filesCount: args.pullRequestData.files.length,
+    });
+
     try {
-    return await callOpenRouterStructured(prompt, config, {
-        maxTokens: 2000,
+      const result = await callOpenRouterStructured(prompt, config, {
+        maxTokens: 4000,
         temperature: 0.3,
       });
+
+      console.log("AI code review generated successfully:", {
+        summaryLength: result.summary.length,
+        overallScore: result.overallScore,
+        findingsCount: result.findings.length,
+        suggestionsCount: result.suggestions.length,
+      });
+
+      return result;
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error("AI code review generation failed:", {
+        error: errorMessage,
+        provider: config.provider,
+        model: config.model,
+        diffLength: args.pullRequestData.diffContent.length,
+      });
+
       if (NoObjectGeneratedError.isInstance(error)) {
         throw new Error(`No object generated from OpenRouter: ${error.cause}`);
       }
-      throw new Error(
-        `Unknown error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+
+      // Re-throw with more context
+      throw new Error(`AI code review failed: ${errorMessage}`);
     }
   },
 });
