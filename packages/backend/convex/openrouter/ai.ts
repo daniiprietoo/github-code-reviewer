@@ -133,6 +133,7 @@ Required JSON structure:
 }`,
         maxTokens: options.maxTokens ?? 4000,
         temperature: options.temperature ?? 0.3,
+        mode: "json",
       });
 
       console.log("AI review generated successfully:", {
