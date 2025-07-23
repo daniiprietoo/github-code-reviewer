@@ -102,6 +102,9 @@ async function callOpenRouterStructured(
     temperature: options.temperature ?? 0.3,
   });
 
+  console.log(response.object);
+  console.log(response.usage);
+
   return response.object;
 }
 
