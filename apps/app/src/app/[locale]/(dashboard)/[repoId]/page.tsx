@@ -2,8 +2,8 @@ import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import type { Id } from "@github-code-reviewer/backend/convex/_generated/dataModel";
 import { preloadQuery } from "convex/nextjs";
-import { PullRequestsSection } from "./_compoments/pullrequests-client";
-import { RepositoryHeader } from "./_compoments/repository-header";
+import { PullRequestsSection } from "./_components/pullrequests-client";
+import { RepositoryHeader } from "./_components/repository-header";
 
 export default async function Page({
   params,
