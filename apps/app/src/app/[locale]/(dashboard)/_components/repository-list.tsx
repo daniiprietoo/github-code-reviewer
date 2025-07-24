@@ -1,6 +1,5 @@
 "use client";
 
-import { LoadingWrapper } from "@/components/loading-wrapper";
 import { useScopedI18n } from "@/locales/client";
 import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { Button } from "@github-code-reviewer/ui/button";
@@ -8,7 +7,6 @@ import { RepositoryListSkeleton } from "@github-code-reviewer/ui/skeleton";
 import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { Calendar, Code, ExternalLink, Github, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function RepositoryList({
@@ -17,7 +15,6 @@ export default function RepositoryList({
   preloadedRepositories: Preloaded<typeof api.repositories.getUserRepositories>;
 }) {
   const t = useScopedI18n("dashboard");
-  const router = useRouter();
 
   const updateGitHubId = useMutation(api.github.updateUserGitHubId);
   const repositories = usePreloadedQuery(preloadedRepositories);
@@ -71,19 +68,16 @@ export default function RepositoryList({
         </span>
       </div>
 
-      <LoadingWrapper
-        isLoading={repositories === undefined}
-        loadingComponent={<RepositoryListSkeleton />}
-        fallback={repositories?.length === 0 ? emptyState : null}
-      >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" >
-          {repositories?.map((repository) => (
-            <Link
+      {repositories === undefined ? (
+        <RepositoryListSkeleton />
+      ) : repositories.length === 0 ? (
+        emptyState
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {repositories.map((repository) => (
+            <div
               key={repository._id}
               className="group relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-card p-6 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md"
-              href={`/${repository._id}`}
-              prefetch={true}
-              tabIndex={0}
             >
               {/* Repository Icon and Actions */}
               <div className="flex items-start justify-between mb-4">
@@ -96,6 +90,7 @@ export default function RepositoryList({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-md p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Link>
@@ -114,15 +109,10 @@ export default function RepositoryList({
               </div>
 
               {/* Repository Info */}
-              <div
-                className="cursor-pointer"
-                onClick={() => router.push(`/${repository._id}`)}
-                role="button"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    router.push(`/${repository._id}`);
-                  }
-                }}
+              <Link
+                href={`/${repository._id}`}
+                prefetch={true}
+                className="block cursor-pointer"
               >
                 <div className="mb-3">
                   <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1 truncate">
@@ -156,11 +146,11 @@ export default function RepositoryList({
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </div>
           ))}
         </div>
-      </LoadingWrapper>
+      )}
     </div>
   );
 }

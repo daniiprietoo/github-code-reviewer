@@ -1,6 +1,5 @@
 "use client";
 
-import { LoadingWrapper } from "@/components/loading-wrapper";
 import type { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { PullRequestListSkeleton } from "@github-code-reviewer/ui/skeleton";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
@@ -83,13 +82,13 @@ export default function PullRequestList({
         </span>
       </div>
 
-      <LoadingWrapper
-        isLoading={pullRequests === undefined}
-        loadingComponent={<PullRequestListSkeleton />}
-        fallback={pullRequests?.length === 0 ? emptyState : null}
-      >
+      {pullRequests === undefined ? (
+        <PullRequestListSkeleton />
+      ) : pullRequests.length === 0 ? (
+        emptyState
+      ) : (
         <div className="space-y-3">
-          {pullRequests?.map((pr) => {
+          {pullRequests.map((pr) => {
             const statusConfig = getStatusConfig(pr.status);
 
             return (
@@ -163,7 +162,7 @@ export default function PullRequestList({
             );
           })}
         </div>
-      </LoadingWrapper>
+      )}
     </div>
   );
 }

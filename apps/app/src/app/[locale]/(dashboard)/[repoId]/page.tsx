@@ -26,18 +26,14 @@ export default async function Page({
   ]);
 
   return (
-    <div className="flex h-full w-full bg-secondary px-6 py-8 dark:bg-black">
-      <div className="z-10 mx-auto flex h-full w-full max-w-screen-xl gap-12">
-        <div className="flex w-full flex-col rounded-lg border border-border bg-card dark:bg-black">
-          {/* Repository Header */}
-          <RepositoryHeader preloadedRepository={preloadedRepository} />
+    <div className="min-h-screen bg-secondary dark:bg-black">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Repository Header */}
+        <RepositoryHeader preloadedRepository={preloadedRepository} />
 
-          {/* Pull Requests Section */}
-          <div className="w-full p-6">
-            <PullRequestsSection
-              preloadedPullRequests={preloadedPullRequests}
-            />
-          </div>
+        {/* Pull Requests Section */}
+        <div className="mt-8">
+          <PullRequestsSection preloadedPullRequests={preloadedPullRequests} />
         </div>
       </div>
     </div>
