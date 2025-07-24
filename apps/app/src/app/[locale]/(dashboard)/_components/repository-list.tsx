@@ -30,7 +30,7 @@ export default function RepositoryList() {
 
   const emptyState = (
     <div className="col-span-full">
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-12">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-70 p-12">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
           <Github className="h-8 w-8 text-gray-600 dark:text-gray-400" />
         </div>

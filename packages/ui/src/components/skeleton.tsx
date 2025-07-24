@@ -79,10 +79,6 @@ export function RepositorySkeleton() {
 export function PullRequestListSkeleton() {
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <Skeleton className="h-7 w-48" />
-        <Skeleton className="h-5 w-24" />
-      </div>
       <div className="space-y-3">
         {[1, 2].map((id) => (
           <PullRequestSkeleton key={`pr-skeleton-${id}`} />
@@ -95,10 +91,6 @@ export function PullRequestListSkeleton() {
 export function RepositoryListSkeleton() {
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <Skeleton className="h-7 w-32" />
-        <Skeleton className="h-5 w-28" />
-      </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((id) => (
           <RepositorySkeleton key={`repo-skeleton-${id}`} />
