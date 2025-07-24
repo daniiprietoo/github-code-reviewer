@@ -1,8 +1,8 @@
 "use client";
 
-import type { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { PullRequestListSkeleton } from "@github-code-reviewer/ui/skeleton";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import {
   Calendar,
   CheckCircle,
@@ -14,14 +14,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function PullRequestList({
-  preloadedPullRequests,
-}: {
-  preloadedPullRequests: Preloaded<
-    typeof api.pullrequests.getRecentPullRequests
-  >;
-}) {
-  const pullRequests = usePreloadedQuery(preloadedPullRequests);
+export default function PullRequestList() {
+  const pullRequests = useQuery(api.pullrequests.getRecentPullRequests, {
+    limit: 10,
+  });
 
   const getStatusConfig = (status: string) => {
     switch (status) {

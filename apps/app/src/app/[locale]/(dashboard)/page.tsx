@@ -4,11 +4,8 @@ export const metadata = {
   title: "Dashboard",
 };
 
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { buttonVariants } from "@github-code-reviewer/ui/button";
 import { cn } from "@github-code-reviewer/ui/utils";
-import { preloadQuery } from "convex/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import RecentPullRequestList from "./_components/recent-pull-request-list";
@@ -16,18 +13,6 @@ import RepositoryList from "./_components/repository-list";
 
 export default async function Page() {
   const t = await getScopedI18n("dashboard");
-
-  const preloadedPullRequests = await preloadQuery(
-    api.pullrequests.getRecentPullRequests,
-    { limit: 5 },
-    { token: await convexAuthNextjsToken() }
-  );
-
-  const preloadedRepositories = await preloadQuery(
-    api.repositories.getUserRepositories,
-    {},
-    { token: await convexAuthNextjsToken() }
-  );
 
   return (
     <div className="min-h-screen bg-secondary dark:bg-black">
@@ -57,10 +42,8 @@ export default async function Page() {
 
         {/* Main Content */}
         <div className="space-y-8">
-          <RepositoryList preloadedRepositories={preloadedRepositories} />
-          <RecentPullRequestList
-            preloadedPullRequests={preloadedPullRequests}
-          />
+          <RepositoryList />
+          <RecentPullRequestList />
         </div>
       </div>
     </div>

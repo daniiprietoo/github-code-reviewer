@@ -31,7 +31,7 @@ export default {
     },
     sidebar: {
       general: "General",
-      billing: "Billing",
+      aiConfig: "AI Config",
     },
   },
 } as const;
