@@ -14,48 +14,64 @@ function Skeleton({
 
 export function PullRequestSkeleton() {
   return (
-    <div className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-primary/20 bg-card p-4 sm:gap-0 gap-4">
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <Skeleton className="h-12 w-12 rounded-lg border border-primary/10 flex-shrink-0" />
-        <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-5 w-48" />
-            <div className="flex items-center gap-1">
-              <Skeleton className="h-4 w-4 rounded-full" />
+    <div className="group relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-card p-4 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm">
+      <div className="flex items-start justify-between">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <Skeleton className="h-8 w-8 rounded-md flex-shrink-0 mt-0.5" />
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Skeleton className="h-5 w-64" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-28 hidden sm:block" />
               <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-20" />
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-4 w-36" />
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-16" />
-          </div>
         </div>
+
+        <Skeleton className="h-8 w-16 rounded-md flex-shrink-0" />
       </div>
-      <Skeleton className="h-9 w-24 rounded-lg" />
     </div>
   );
 }
 
 export function RepositorySkeleton() {
   return (
-    <div className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-primary/20 bg-card p-4 sm:gap-0 gap-4">
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <Skeleton className="h-12 w-12 rounded-lg border border-primary/10 flex-shrink-0" />
-        <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-6 w-16 rounded-full" />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-4 w-40" />
+    <div className="group relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-card p-6 transition-all hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md">
+      {/* Repository Icon and Actions */}
+      <div className="flex items-start justify-between mb-4">
+        <Skeleton className="h-10 w-10 rounded-lg" />
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-7 w-7 rounded-md" />
+          <Skeleton className="h-7 w-7 rounded-md" />
+        </div>
+      </div>
+
+      {/* Repository Info */}
+      <div className="mb-3">
+        <Skeleton className="h-6 w-40 mb-1" />
+        <Skeleton className="h-5 w-48" />
+      </div>
+
+      {/* Repository Metadata */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-2 w-2 rounded-full" />
             <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex items-center gap-1">
+            <Skeleton className="h-3 w-3" />
+            <Skeleton className="h-4 w-16" />
           </div>
         </div>
       </div>
-      <Skeleton className="h-9 w-32 rounded-lg" />
     </div>
   );
 }
@@ -63,8 +79,11 @@ export function RepositorySkeleton() {
 export function PullRequestListSkeleton() {
   return (
     <div>
-      <Skeleton className="h-7 w-48 mb-4" />
-      <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="h-5 w-24" />
+      </div>
+      <div className="space-y-3">
         {[1, 2].map((id) => (
           <PullRequestSkeleton key={`pr-skeleton-${id}`} />
         ))}
@@ -76,8 +95,11 @@ export function PullRequestListSkeleton() {
 export function RepositoryListSkeleton() {
   return (
     <div>
-      <Skeleton className="h-7 w-80 mb-4" />
-      <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-7 w-32" />
+        <Skeleton className="h-5 w-28" />
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((id) => (
           <RepositorySkeleton key={`repo-skeleton-${id}`} />
         ))}

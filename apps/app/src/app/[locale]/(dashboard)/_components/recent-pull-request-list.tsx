@@ -52,7 +52,7 @@ export default function PullRequestList() {
   };
 
   const emptyState = (
-    <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-8">
+    <div className="rounded-lg p-8">
       <div className="flex flex-col items-center justify-center">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-3">
           <GitPullRequest className="h-6 w-6 text-gray-600 dark:text-gray-400" />

@@ -4,6 +4,8 @@
   "workspaces": ["packages/*", "apps/*", "tooling/*"],
   "scripts": {
     "build": "turbo build",
+    "build:web": "turbo build --filter=@github-code-reviewer/web",
+    "build:app": "turbo build --filter=@github-code-reviewer/app",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo clean",
     "dev": "turbo dev --parallel",
