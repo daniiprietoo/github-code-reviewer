@@ -35,7 +35,7 @@ export default {
     },
     sidebar: {
       general: "General",
-      billing: "Facturación",
+      aiConfig: "Configuración de IA",
     },
   },
 } as const;

@@ -1,14 +1,16 @@
 "use client";
 
 import { api } from "@github-code-reviewer/backend/convex/_generated/api";
-import type { Doc } from "@github-code-reviewer/backend/convex/_generated/dataModel";
+import type {
+  Doc,
+  Id,
+} from "@github-code-reviewer/backend/convex/_generated/dataModel";
 import { Button } from "@github-code-reviewer/ui/button";
 import { buttonVariants } from "@github-code-reviewer/ui/button";
 import { cn } from "@github-code-reviewer/ui/utils";
-import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import {
   ArrowLeft,
-  Code2,
   ExternalLink,
   GitBranch,
   Github,
@@ -22,11 +24,13 @@ import { useRouter } from "next/navigation";
 interface Repository extends Doc<"repositories"> {}
 
 export function RepositoryHeader({
-  preloadedRepository,
+  repoId,
 }: {
-  preloadedRepository: Preloaded<typeof api.repositories.getRepository>;
+  repoId: string;
 }) {
-  const repository = usePreloadedQuery(preloadedRepository);
+  const repository = useQuery(api.repositories.getRepository, {
+    repositoryId: repoId as Id<"repositories">,
+  });
 
   const emptyState = (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8">

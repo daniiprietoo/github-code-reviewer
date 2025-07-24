@@ -4,20 +4,16 @@ import { useScopedI18n } from "@/locales/client";
 import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { Button } from "@github-code-reviewer/ui/button";
 import { RepositoryListSkeleton } from "@github-code-reviewer/ui/skeleton";
-import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
-import { Calendar, Code, ExternalLink, Github, Trash2 } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { Calendar, ExternalLink, Github, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
-export default function RepositoryList({
-  preloadedRepositories,
-}: {
-  preloadedRepositories: Preloaded<typeof api.repositories.getUserRepositories>;
-}) {
+export default function RepositoryList() {
   const t = useScopedI18n("dashboard");
 
   const updateGitHubId = useMutation(api.github.updateUserGitHubId);
-  const repositories = usePreloadedQuery(preloadedRepositories);
+  const repositories = useQuery(api.repositories.getUserRepositories);
   const disconnectRepository = useMutation(api.github.disconnectRepository);
 
   useEffect(() => {

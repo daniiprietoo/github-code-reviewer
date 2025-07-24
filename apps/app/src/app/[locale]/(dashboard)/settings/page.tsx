@@ -14,7 +14,6 @@ import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Upload } from "lucide-react";
-import { AIConfig } from "./_components/ai-config";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
@@ -166,14 +165,7 @@ export default function DashboardSettings() {
             Save
           </Button>
         </div>
-      </form>
-
-      {/* AI Configuration */}
-      <div className="flex w-full flex-col items-start rounded-lg border border-border bg-card">
-        <div className="w-full p-6">
-          <AIConfig />
-        </div>
-      </div>
+      </form>      
 
       {/* Delete Account */}
       <div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">

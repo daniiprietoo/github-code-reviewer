@@ -1,9 +1,12 @@
 "use client";
 
-import type { api } from "@github-code-reviewer/backend/convex/_generated/api";
-import type { Doc } from "@github-code-reviewer/backend/convex/_generated/dataModel";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import type {
+  Doc,
+  Id,
+} from "@github-code-reviewer/backend/convex/_generated/dataModel";
 import { cn } from "@github-code-reviewer/ui/utils";
-import { type Preloaded, usePreloadedQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import {
   Calendar,
   CheckCircle,
@@ -36,14 +39,10 @@ export interface PullRequestWithReviews extends Doc<"pullRequests"> {
   codeReviews: CodeReview[];
 }
 
-export function PullRequestsSection({
-  preloadedPullRequests,
-}: {
-  preloadedPullRequests: Preloaded<
-    typeof api.pullrequests.getPullRequestsForRepository
-  >;
-}) {
-  const pullRequests = usePreloadedQuery(preloadedPullRequests);
+export function PullRequestsSection({ repoId }: { repoId: string }) {
+  const pullRequests = useQuery(api.pullrequests.getPullRequestsForRepository, {
+    repositoryId: repoId as Id<"repositories">,
+  });
 
   const emptyState = (
     <div className="rounded-lg border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-12">

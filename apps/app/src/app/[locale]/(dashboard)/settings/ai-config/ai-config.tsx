@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@github-code-reviewer/ui/select";
+import { AIConfigSkeleton } from "@github-code-reviewer/ui/skeleton";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { Edit, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -226,13 +227,15 @@ export function AIConfig() {
             Configure your AI provider to enable automated code reviews
           </p>
         </div>
-        {!config && !showForm && (
+        {config === null && !showForm && (
           <Button onClick={handleAdd} size="sm">
             <Plus className="w-4 h-4 mr-2" />
             Add Configuration
           </Button>
         )}
       </div>
+
+      {config === undefined && <AIConfigSkeleton />}
 
       {/* Existing Configuration */}
       {config && !showForm && (
@@ -438,7 +441,7 @@ export function AIConfig() {
       )}
 
       {/* Empty State */}
-      {!config && !showForm && (
+      {config === null && !showForm && (
         <div className="text-center py-8 border rounded-lg border-dashed">
           <div className="space-y-2">
             <h4 className="font-medium">No AI configuration</h4>
@@ -468,7 +471,7 @@ export function AIConfig() {
             </li>
             <li>• Detailed feedback is posted as comments on GitHub</li>
             {config.provider === "openrouter" ? (
-              <>  
+              <>
                 <li>• Your personal API key is used for all AI requests</li>
                 <li>• You have full control over costs and usage limits</li>
                 <li>• Access to premium models with higher quality reviews</li>

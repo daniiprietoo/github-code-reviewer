@@ -27,7 +27,7 @@ export function Navigation({
   const { signOut } = useAuthActions();
   const pathname = usePathname();
   const router = useRouter();
-  const isSettingsPath = pathname === "/settings";
+  const isSettingsPath = pathname.includes("/settings");
 
   const user = usePreloadedQuery(preloadedUser);
 
