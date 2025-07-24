@@ -8,6 +8,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { ConvexClientProvider } from "../convex-client-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Github Code Reviewer",
@@ -48,6 +49,7 @@ export default async function RootLayout({
               <ConvexClientProvider>
                 <I18nProviderClient locale={locale}>
                   {children}
+                  <SpeedInsights />
                 </I18nProviderClient>
               </ConvexClientProvider>
             </TooltipProvider>

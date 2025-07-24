@@ -34,6 +34,7 @@
   "packageManager": "bun@1.1.26",
   "version": "0.0.1",
   "dependencies": {
+    "@vercel/speed-insights": "^1.2.0",
     "react-dropzone": "^14.3.8"
   }
 }
