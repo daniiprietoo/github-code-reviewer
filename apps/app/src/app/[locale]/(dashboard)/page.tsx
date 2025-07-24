@@ -4,15 +4,15 @@ export const metadata = {
   title: "Dashboard",
 };
 
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+import { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { buttonVariants } from "@github-code-reviewer/ui/button";
 import { cn } from "@github-code-reviewer/ui/utils";
+import { preloadQuery } from "convex/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import RecentPullRequestList from "./_components/recent-pull-request-list";
 import RepositoryList from "./_components/repository-list";
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@github-code-reviewer/backend/convex/_generated/api";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 
 export default async function Page() {
   const t = await getScopedI18n("dashboard");
@@ -30,41 +30,39 @@ export default async function Page() {
   );
 
   return (
-    <>
-      <div className="flex h-full w-full bg-secondary px-6 py-8 dark:bg-black">
-        <div className="z-10 mx-auto flex h-full w-full max-w-screen-xl gap-12">
-          <div className="flex w-full flex-col rounded-lg border border-border bg-card dark:bg-black">
-            <div className="flex w-full flex-col rounded-lg p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-2">
-                  <h2 className="text-xl font-medium text-primary">
-                    {t("bodyTitle")}
-                  </h2>
-                  <p className="text-sm font-normal text-primary/60">
-                    {t("bodyDescription")}
-                  </p>
-                </div>
-                <Link
-                  href="https://github.com/apps/dev-code-reviewer"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "flex items-center gap-2"
-                  )}
-                >
-                  <Plus className="h-4 w-4" />
-                  {t("connectMoreRepos")}
-                </Link>
-              </div>
+    <div className="min-h-screen bg-secondary dark:bg-black">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {t("bodyTitle")}
+              </h1>
             </div>
-            <div className="w-full p-6 space-y-8">
-              <RepositoryList preloadedRepositories={preloadedRepositories} />
-              <RecentPullRequestList preloadedPullRequests={preloadedPullRequests} />
-            </div>
+            <Link
+              href="https://github.com/apps/dev-code-reviewer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "flex items-center gap-2"
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              {t("connectMoreRepos")}
+            </Link>
           </div>
         </div>
+
+        {/* Main Content */}
+        <div className="space-y-8">
+          <RepositoryList preloadedRepositories={preloadedRepositories} />
+          <RecentPullRequestList
+            preloadedPullRequests={preloadedPullRequests}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

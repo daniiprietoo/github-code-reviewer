@@ -1,8 +1,7 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { CheckoutLink } from "@convex-dev/polar/react";
-import { api } from "@github-code-reviewer/backend/convex/_generated/api";
+import type { api } from "@github-code-reviewer/backend/convex/_generated/api";
 import { Button, buttonVariants } from "@github-code-reviewer/ui/button";
 import {
   DropdownMenu,
@@ -14,15 +13,7 @@ import {
 } from "@github-code-reviewer/ui/dropdown-menu";
 import { cn } from "@github-code-reviewer/ui/utils";
 import { type Preloaded, usePreloadedQuery } from "convex/react";
-import {
-  Check,
-  ChevronDown,
-  ChevronUp,
-  LogOut,
-  Settings,
-  Slash,
-} from "lucide-react";
-import Image from "next/image";
+import { Check, ChevronDown, ChevronUp, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LanguageSwitcher } from "./language-switcher";
@@ -30,39 +21,24 @@ import { ThemeSwitcher } from "./theme-switcher";
 
 export function Navigation({
   preloadedUser,
-  preloadedProducts,
 }: {
   preloadedUser: Preloaded<typeof api.users.getUser>;
-  preloadedProducts: Preloaded<typeof api.subscriptions.listAllProducts>;
 }) {
   const { signOut } = useAuthActions();
   const pathname = usePathname();
   const router = useRouter();
-  const isDashboardPath = pathname === "/";
   const isSettingsPath = pathname === "/settings";
 
   const user = usePreloadedQuery(preloadedUser);
-  const products = usePreloadedQuery(preloadedProducts);
-
-  const monthlyProProduct = products?.find(
-    (product) => product.recurringInterval === "month"
-  );
-  const yearlyProProduct = products?.find(
-    (product) => product.recurringInterval === "year"
-  );
 
   if (!user) {
     return null;
   }
 
   return (
-    <nav className="sticky top-0 z-50 flex w-full flex-col bg-card px-6 pb-2 py-3">
-      <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between border-b border-primary/10 py-3">
+    <nav className="sticky top-0 z-50 flex w-full flex-col bg-card px-4 py-3 border-b border-primary/10">
+      <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between">
         <div className="flex h-10 items-center gap-2">
-          <Link href="/" className="flex h-10 items-center gap-1">
-            <Image src="/favicon.ico" alt="logo" width={50} height={50} />
-          </Link>
-          <Slash className="h-6 w-6 -rotate-12 stroke-[1.5px] text-primary/10" />
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -118,20 +94,6 @@ export function Navigation({
                 </div>
                 <Check className="h-[18px] w-[18px] stroke-[1.5px] text-primary/60" />
               </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="mx-0 my-2" />
-              <DropdownMenuItem className="p-0 focus:bg-transparent">
-                {monthlyProProduct && yearlyProProduct && (
-                  <Button size="sm" className="w-full" asChild>
-                    <CheckoutLink
-                      polarApi={api.subscriptions}
-                      productIds={[monthlyProProduct.id, yearlyProProduct.id]}
-                    >
-                      Upgrade to PRO
-                    </CheckoutLink>
-                  </Button>
-                )}
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -142,7 +104,7 @@ export function Navigation({
             href="/"
             className={cn(
               `${buttonVariants({ variant: "ghost", size: "sm" })} text-primary/80 rounded-3xl transition-colors duration-200 hover:text-primary flex-1 justify-center relative`,
-              isDashboardPath && "text-primary"
+              !isSettingsPath && "text-primary"
             )}
           >
             Dashboard
@@ -150,7 +112,7 @@ export function Navigation({
             <div
               className={cn(
                 "absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity duration-300",
-                isDashboardPath ? "opacity-100" : "opacity-0"
+                !isSettingsPath ? "opacity-100" : "opacity-0"
               )}
             />
           </Link>
@@ -216,17 +178,17 @@ export function Navigation({
                 </p>
                 <p className="text-sm text-primary/60">{user?.email}</p>
               </DropdownMenuItem>
-
-              <DropdownMenuItem
+              <Link
+                href="/settings"
                 className="group h-9 w-full cursor-pointer justify-between rounded-md px-2"
-                onClick={() => router.push("/settings")}
               >
-                <span className="text-sm text-primary/60 group-hover:text-primary group-focus:text-primary">
-                  Settings
-                </span>
-                <Settings className="h-[18px] w-[18px] stroke-[1.5px] text-primary/60 group-hover:text-primary group-focus:text-primary" />
-              </DropdownMenuItem>
-
+                <DropdownMenuItem className="group h-9 w-full cursor-pointer justify-between rounded-md px-2">
+                  <span className="text-sm text-primary/60 group-hover:text-primary group-focus:text-primary">
+                    Settings
+                  </span>
+                  <Settings className="h-[18px] w-[18px] stroke-[1.5px] text-primary/60 group-hover:text-primary group-focus:text-primary" />
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 className={cn(
                   "group flex h-9 justify-between rounded-md px-2 hover:bg-transparent"
