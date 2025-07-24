@@ -41,7 +41,7 @@ export default function RepositoryList() {
           {t("description")}
         </p>
         <Link
-          href="https://github.com/apps/dev-code-reviewer"
+          href={`${process.env.NEXT_PUBLIC_GITHUB_APP_URL}`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-gray-900 transition-colors hover:bg-gray-800 dark:hover:bg-gray-100"
