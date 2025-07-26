@@ -13,6 +13,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CONVEX_URL: z.string(),
     NEXT_PUBLIC_OPENPANEL_CLIENT_ID: z.optional(z.string()),
     NEXT_PUBLIC_SENTRY_DSN: z.optional(z.string()),
+    NEXT_PUBLIC_GITHUB_APP_URL: z.string(),
   },
   runtimeEnv: {
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
@@ -21,6 +22,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     PORT: process.env.PORT,
     VERCEL_URL: process.env.VERCEL_URL,
+    NEXT_PUBLIC_GITHUB_APP_URL: process.env.NEXT_PUBLIC_GITHUB_APP_URL,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });

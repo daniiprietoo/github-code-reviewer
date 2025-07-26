@@ -1,13 +1,13 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import {
+  type QueryCtx,
   internalMutation,
   mutation,
   query,
-  type QueryCtx,
 } from "./_generated/server";
 import { getUserGitHubId } from "./utils/github";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const savePullRequest = mutation({
   args: {
@@ -181,7 +181,13 @@ export const getPullRequestsForRepository = query({
       return [];
     }
 
-    const pullRequests = await ctx.db.query("pullRequests").withIndex("by_repository", (q) => q.eq("repositoryId", args.repositoryId)).collect();
+    const pullRequests = await ctx.db
+      .query("pullRequests")
+      .withIndex("by_repository", (q) =>
+        q.eq("repositoryId", args.repositoryId),
+      )
+      .order("desc")
+      .collect();
 
     return await Promise.all(
       pullRequests.map(async (pr) => {
