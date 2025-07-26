@@ -12,7 +12,7 @@ import {
 } from "@github-code-reviewer/ui/select";
 import { AIConfigSkeleton } from "@github-code-reviewer/ui/skeleton";
 import { useAction, useMutation, useQuery } from "convex/react";
-import { Edit, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
+import { Bot, Edit, Eye, EyeOff, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface AIConfig {
@@ -218,17 +218,28 @@ export function AIConfig() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-medium">AI Configuration</h3>
-          <p className="text-sm text-muted-foreground">
-            Configure your AI provider to enable automated code reviews
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/25">
+            <Bot className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 dark:from-white dark:via-purple-200 dark:to-indigo-200 bg-clip-text text-transparent">
+              AI Configuration
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Configure your AI provider to enable automated code reviews
+            </p>
+          </div>
         </div>
         {config === null && !showForm && (
-          <Button onClick={handleAdd} size="sm">
+          <Button
+            onClick={handleAdd}
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-200"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Add Configuration
           </Button>
@@ -239,12 +250,19 @@ export function AIConfig() {
 
       {/* Existing Configuration */}
       {config && !showForm && (
-        <div className="border rounded-lg">
-          <div className="p-4 border-b bg-muted/50">
+        <div className="border border-gray-200/60 dark:border-gray-700/60 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-lg shadow-gray-500/10">
+          <div className="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-r from-gray-50/80 to-purple-50/50 dark:from-gray-800/80 dark:to-purple-950/30 rounded-t-2xl">
             <div className="flex items-center justify-between">
-              <h4 className="font-medium">Current Configuration</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white">
+                Current Configuration
+              </h4>
               <div className="flex gap-2">
-                <Button onClick={handleEdit} variant="outline" size="sm">
+                <Button
+                  onClick={handleEdit}
+                  variant="outline"
+                  size="sm"
+                  className="hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:text-blue-600 dark:hover:text-blue-400"
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
                 </Button>
@@ -253,6 +271,7 @@ export function AIConfig() {
                   variant="outline"
                   size="sm"
                   disabled={isDeleting}
+                  className="hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   {isDeleting ? "Deleting..." : "Delete"}
@@ -260,13 +279,13 @@ export function AIConfig() {
               </div>
             </div>
           </div>
-          <div className="p-4 space-y-4">
+          <div className="p-6 space-y-4">
             <div className="grid grid-cols-4 gap-4">
               <div className="col-span-2">
-                <label className="text-sm font-medium text-muted-foreground">
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Provider
                 </label>
-                <p className="text-sm font-medium">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {
                     AI_PROVIDERS[config.provider as keyof typeof AI_PROVIDERS]
                       .name
@@ -274,22 +293,22 @@ export function AIConfig() {
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   Model
                 </label>
-                <p className="text-sm font-medium">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {config.model ||
                     AI_PROVIDERS[config.provider as keyof typeof AI_PROVIDERS]
                       .defaultModel}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   API Key
                 </label>
                 {config.provider === "openrouter" ? (
                   <div className="flex items-center gap-1">
-                    <p className="text-xs font-mono truncate">
+                    <p className="text-xs font-mono truncate text-gray-700 dark:text-gray-300">
                       {showApiKey
                         ? config.apiKey || ""
                         : maskApiKey(config.apiKey || "")}
@@ -308,7 +327,9 @@ export function AIConfig() {
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-xs font-mono truncate">Free</p>
+                  <p className="text-xs font-mono truncate text-green-600 dark:text-green-400">
+                    Free
+                  </p>
                 )}
               </div>
             </div>
@@ -318,26 +339,33 @@ export function AIConfig() {
 
       {/* Configuration Form */}
       {showForm && (
-        <div className="border rounded-lg">
-          <div className="p-4 border-b bg-muted/50">
+        <div className="border border-gray-200/60 dark:border-gray-700/60 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-lg shadow-gray-500/10">
+          <div className="p-4 border-b border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-r from-gray-50/80 to-blue-50/50 dark:from-gray-800/80 dark:to-blue-950/30 rounded-t-2xl">
             <div className="flex items-center justify-between">
-              <h4 className="font-medium">
+              <h4 className="font-semibold text-gray-900 dark:text-white">
                 {isEditing ? "Edit Configuration" : "Add Configuration"}
               </h4>
-              <Button onClick={handleCancel} variant="ghost" size="sm">
+              <Button
+                onClick={handleCancel}
+                variant="ghost"
+                size="sm"
+                className="hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
                 Cancel
               </Button>
             </div>
           </div>
-          <div className="p-4 space-y-4">
+          <div className="p-6 space-y-6">
             {/* Provider Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">AI Provider</label>
+              <label className="text-sm font-medium text-gray-900 dark:text-white">
+                AI Provider
+              </label>
               <Select
                 value={formData.provider}
                 onValueChange={handleProviderChange}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200 dark:border-gray-700">
                   <SelectValue placeholder="Select AI provider" />
                 </SelectTrigger>
                 <SelectContent>
@@ -353,14 +381,17 @@ export function AIConfig() {
             {/* API Key */}
             {formData.provider === "openrouter" && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">API Key</label>
+                <label className="text-sm font-medium text-gray-900 dark:text-white">
+                  API Key
+                </label>
                 <Input
                   type="password"
                   placeholder="Enter your API key"
                   value={formData.apiKey}
                   onChange={(e) => updateFormData("apiKey", e.target.value)}
+                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200 dark:border-gray-700"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Get your API key from OpenRouter Platform
                 </p>
               </div>
@@ -368,7 +399,9 @@ export function AIConfig() {
 
             {/* Model Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Model</label>
+              <label className="text-sm font-medium text-gray-900 dark:text-white">
+                Model
+              </label>
               <Select
                 value={
                   formData.model ||
@@ -377,7 +410,7 @@ export function AIConfig() {
                 }
                 onValueChange={(model) => updateFormData("model", model)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200 dark:border-gray-700">
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
                 <SelectContent>
@@ -395,11 +428,11 @@ export function AIConfig() {
             {/* Test Result */}
             {testResult && (
               <div
-                className={`p-3 rounded-md text-sm ${
+                className={`p-4 rounded-xl text-sm font-medium ${
                   testResult.success
-                    ? "bg-green-50 text-green-700 border border-green-200"
-                    : "bg-red-50 text-red-700 border border-red-200"
-                }`}
+                    ? "bg-green-50/80 text-green-700 border border-green-200/60 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800/60"
+                    : "bg-red-50/80 text-red-700 border border-red-200/60 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800/60"
+                } backdrop-blur-sm`}
               >
                 {testResult.success
                   ? "✅ Connection test successful!"
@@ -408,7 +441,7 @@ export function AIConfig() {
             )}
 
             {/* Actions */}
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-3 pt-2">
               <Button
                 onClick={handleTest}
                 disabled={
@@ -418,6 +451,7 @@ export function AIConfig() {
                   isTesting
                 }
                 variant="outline"
+                className="hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:text-blue-600 dark:hover:text-blue-400"
               >
                 {isTesting ? "Testing..." : "Test Connection"}
               </Button>
@@ -428,6 +462,7 @@ export function AIConfig() {
                     !formData.apiKey?.trim()) ||
                   isSaving
                 }
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-200"
               >
                 {isSaving
                   ? "Saving..."
@@ -442,14 +477,22 @@ export function AIConfig() {
 
       {/* Empty State */}
       {config === null && !showForm && (
-        <div className="text-center py-8 border rounded-lg border-dashed">
-          <div className="space-y-2">
-            <h4 className="font-medium">No AI configuration</h4>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+        <div className="text-center py-16 border border-dashed border-purple-200 dark:border-purple-800/50 rounded-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
+          <div className="space-y-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/25 mx-auto mb-4">
+              <Bot className="h-8 w-8 text-white" />
+            </div>
+            <h4 className="font-semibold text-gray-900 dark:text-white">
+              No AI configuration
+            </h4>
+            <p className="text-sm text-gray-600 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
               Add your AI provider configuration to enable automated code
               reviews on your repositories.
             </p>
-            <Button onClick={handleAdd} className="mt-4">
+            <Button
+              onClick={handleAdd}
+              className="mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-200"
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Configuration
             </Button>
@@ -459,9 +502,16 @@ export function AIConfig() {
 
       {/* How it works */}
       {config && (
-        <div className="border-t pt-4">
-          <h4 className="font-medium mb-2">How it works</h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
+        <div className="border-t border-gray-200/60 dark:border-gray-700/60 pt-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
+            <h4 className="font-semibold text-gray-900 dark:text-white">
+              How it works
+            </h4>
+          </div>
+          <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 leading-relaxed">
             <li>
               • AI reviews are automatically triggered on new pull requests
             </li>

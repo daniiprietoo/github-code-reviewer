@@ -101,12 +101,19 @@ export function Navigation({
 
         {/* Navigation tabs with individual indicators for perfect alignment */}
         <div className="relative flex items-center gap-2">
-          <Link
-            href="/"
+          <div
             className={cn(
               `${buttonVariants({ variant: "ghost", size: "sm" })} text-gray-600 dark:text-gray-400 rounded-2xl transition-all duration-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 flex-1 justify-center relative font-semibold`,
               !isSettingsPath && "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30"
             )}
+            onClick={() => router.push("/")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                router.push("/");
+              }
+            }}
+            role="button"
+            tabIndex={0}
           >
             Dashboard
             {/* Individual indicator for perfect alignment */}
@@ -116,14 +123,21 @@ export function Navigation({
                 !isSettingsPath ? "opacity-100" : "opacity-0"
               )}
             />
-          </Link>
+          </div>
 
-          <Link
-            href="/settings"
+          <div
             className={cn(
               `${buttonVariants({ variant: "ghost", size: "sm" })} text-gray-600 dark:text-gray-400 rounded-2xl transition-all duration-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 flex-1 justify-center relative font-semibold`,
               isSettingsPath && "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30"
             )}
+            onClick={() => router.push("/settings")}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                router.push("/settings");
+              }
+            }}
+            role="button"
+            tabIndex={0}
           >
             Settings
             {/* Individual indicator for perfect alignment */}
@@ -133,7 +147,7 @@ export function Navigation({
                 isSettingsPath ? "opacity-100" : "opacity-0"
               )}
             />
-          </Link>
+          </div>
         </div>
 
         <div className="flex h-10 items-center gap-3">

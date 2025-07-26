@@ -13,7 +13,7 @@ import { useDoubleCheck } from "@github-code-reviewer/ui/utils";
 import { useForm } from "@tanstack/react-form";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { useAction, useMutation, useQuery } from "convex/react";
-import { Upload } from "lucide-react";
+import { Image, Upload, User, UserX } from "lucide-react";
 
 export default function DashboardSettings() {
   const t = useScopedI18n("settings");
@@ -55,33 +55,41 @@ export default function DashboardSettings() {
   }
 
   return (
-    <div className="flex h-full w-full flex-col gap-6">
+    <div className="flex h-full w-full flex-col gap-8">
       {/* Avatar */}
-      <div className="flex w-full flex-col items-start rounded-lg border border-border bg-card">
-        <div className="flex w-full items-start justify-between rounded-lg p-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium text-primary">
-              {t("avatar.title")}
-            </h2>
-            <p className="text-sm font-normal text-primary/60">
+      <div className="relative overflow-hidden flex w-full flex-col items-start rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg shadow-gray-500/10">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-indigo-50/30 dark:from-blue-950/20 dark:via-transparent dark:to-indigo-950/10 opacity-60" />
+
+        <div className="relative flex w-full items-start justify-between rounded-2xl p-6">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600">
+                <Image className="h-4 w-4 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 dark:from-white dark:via-blue-200 dark:to-indigo-200 bg-clip-text text-transparent">
+                {t("avatar.title")}
+              </h2>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
               {t("avatar.description")}
             </p>
           </div>
           <label
             htmlFor="avatar_field"
-            className="group relative flex cursor-pointer overflow-hidden rounded-full transition active:scale-95"
+            className="group relative flex cursor-pointer overflow-hidden rounded-2xl transition-all duration-200 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20"
           >
             {user.avatarUrl ? (
               <img
                 src={user.avatarUrl}
-                className="h-20 w-20 rounded-full object-cover"
+                className="h-20 w-20 rounded-2xl object-cover border-2 border-white dark:border-gray-800 shadow-lg"
                 alt={user.username ?? user.email}
               />
             ) : (
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-lime-400 from-10% via-cyan-300 to-blue-500" />
+              <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 border-2 border-white dark:border-gray-800 shadow-lg" />
             )}
-            <div className="absolute z-10 hidden h-full w-full items-center justify-center bg-primary/40 group-hover:flex">
-              <Upload className="h-6 w-6 text-secondary" />
+            <div className="absolute z-10 hidden h-full w-full items-center justify-center bg-black/40 backdrop-blur-sm group-hover:flex transition-all duration-200">
+              <Upload className="h-6 w-6 text-white" />
             </div>
           </label>
           <UploadInput
@@ -95,18 +103,19 @@ export default function DashboardSettings() {
             onUploadComplete={handleUpdateUserImage}
           />
         </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-          <p className="text-sm font-normal text-primary/60">
+        <div className="relative flex min-h-14 w-full items-center justify-between rounded-2xl rounded-t-none border-t border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-r from-gray-50/80 to-blue-50/50 dark:from-gray-800/80 dark:to-blue-950/30 px-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t("avatar.uploadHint")}
           </p>
           {user.avatarUrl && (
             <Button
               type="button"
               size="sm"
-              variant="secondary"
+              variant="outline"
               onClick={() => {
                 removeUserImage({});
               }}
+              className="hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700"
             >
               {t("avatar.resetButton")}
             </Button>
@@ -116,17 +125,27 @@ export default function DashboardSettings() {
 
       {/* Username */}
       <form
-        className="flex w-full flex-col items-start rounded-lg border border-border bg-card"
+        className="relative overflow-hidden flex w-full flex-col items-start rounded-2xl border border-gray-200/60 dark:border-gray-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg shadow-gray-500/10"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
           usernameForm.handleSubmit();
         }}
       >
-        <div className="flex w-full flex-col gap-4 rounded-lg p-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-xl font-medium text-primary">Your Username</h2>
-            <p className="text-sm font-normal text-primary/60">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-emerald-50/30 dark:from-green-950/20 dark:via-transparent dark:to-emerald-950/10 opacity-60" />
+
+        <div className="relative flex w-full flex-col gap-4 rounded-2xl p-6">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-emerald-600">
+                <User className="h-4 w-4 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-green-800 to-emerald-800 dark:from-white dark:via-green-200 dark:to-emerald-200 bg-clip-text text-transparent">
+                Your Username
+              </h2>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
               This is your username. It will be displayed on your profile.
             </p>
           </div>
@@ -144,7 +163,7 @@ export default function DashboardSettings() {
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                className={`w-80 bg-transparent ${
+                className={`w-80 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border-gray-200 dark:border-gray-700 ${
                   field.state.meta?.errors.length > 0 &&
                   "border-destructive focus-visible:ring-destructive"
                 }`}
@@ -152,38 +171,51 @@ export default function DashboardSettings() {
             )}
           />
           {usernameForm.state.fieldMeta.username?.errors.length > 0 && (
-            <p className="text-sm text-destructive dark:text-destructive-foreground">
+            <p className="text-sm text-destructive dark:text-destructive-foreground font-medium">
               {usernameForm.state.fieldMeta.username?.errors.join(" ")}
             </p>
           )}
         </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-secondary px-6 dark:bg-card">
-          <p className="text-sm font-normal text-primary/60">
+        <div className="relative flex min-h-14 w-full items-center justify-between rounded-2xl rounded-t-none border-t border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-r from-gray-50/80 to-green-50/50 dark:from-gray-800/80 dark:to-green-950/30 px-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Please use 32 characters at maximum.
           </p>
-          <Button type="submit" size="sm">
+          <Button
+            type="submit"
+            size="sm"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-200"
+          >
             Save
           </Button>
         </div>
-      </form>      
+      </form>
 
       {/* Delete Account */}
-      <div className="flex w-full flex-col items-start rounded-lg border border-destructive bg-card">
-        <div className="flex flex-col gap-2 p-6">
-          <h2 className="text-xl font-medium text-primary">
-            {t("deleteAccount.title")}
-          </h2>
-          <p className="text-sm font-normal text-primary/60">
+      <div className="relative overflow-hidden flex w-full flex-col items-start rounded-2xl border border-red-300/60 dark:border-red-700/60 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg shadow-red-500/10">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 via-transparent to-rose-50/30 dark:from-red-950/20 dark:via-transparent dark:to-rose-950/10 opacity-60" />
+
+        <div className="relative flex flex-col gap-3 p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-red-500 to-rose-600">
+              <UserX className="h-4 w-4 text-white" />
+            </div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-red-800 to-rose-800 dark:from-white dark:via-red-200 dark:to-rose-200 bg-clip-text text-transparent">
+              {t("deleteAccount.title")}
+            </h2>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
             {t("deleteAccount.description")}
           </p>
         </div>
-        <div className="flex min-h-14 w-full items-center justify-between rounded-lg rounded-t-none border-t border-border bg-red-500/10 px-6 dark:bg-red-500/10">
-          <p className="text-sm font-normal text-primary/60">
+        <div className="relative flex min-h-14 w-full items-center justify-between rounded-2xl rounded-t-none border-t border-red-200/60 dark:border-red-800/60 bg-gradient-to-r from-red-50/80 to-rose-50/50 dark:from-red-900/20 dark:to-rose-900/20 px-6">
+          <p className="text-sm text-red-700 dark:text-red-300 font-medium">
             {t("deleteAccount.warning")}
           </p>
           <Button
             size="sm"
             variant="destructive"
+            className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 border-0 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-200"
             {...getButtonProps({
               onClick: doubleCheck ? handleDeleteAccount : undefined,
             })}
